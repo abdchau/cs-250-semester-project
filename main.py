@@ -1,6 +1,6 @@
 import json
 import os
-#import nltk
+import operator
 import string
 
 inDir = "..\\Popular Blog Post Dataset\\717_webhose-2017-03_20170904123310"
@@ -14,9 +14,15 @@ def main():
 	tokens = text.split()
 
 
-	lexicon = dict()
-	wordID = 0
+	try:
+		with open('lexicon.json', 'r', encoding="utf8") as f:
+			lexicon =json.load(f)
+		wordID = max(lexicon.items(), key=operator.itemgetter(1))[1] + 1
+	except FileNotFoundError:
+		lexicon = dict()
+		wordID = 0
 
+	print(wordID)
 	invalidChars = set(string.punctuation)
 
 	for token in tokens:
