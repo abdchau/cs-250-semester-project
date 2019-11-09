@@ -1,0 +1,17 @@
+organizations
+uuid
+thread
+author
+url
+ord_in_thread
+title
+locations
+entities
+highlightText
+language
+persons
+text
+external_links
+published
+crawled
+highlightTitle
