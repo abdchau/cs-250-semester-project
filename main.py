@@ -9,7 +9,7 @@ inDir = "../Popular Blog Post Dataset/717_webhose-2017-03_20170904123310"
 def main():
 	
 	for file in tqdm(os.listdir(inDir)[:20]):		#run for entire directory to generate complete lexicon
-		with open(os.path.join(inDir, file), 'r', encoding="utf8") as f:
+		with open(inDir+file), 'r', encoding="utf8") as f:
 			dicc = json.load(f)
 
 		text = dicc['text']
