@@ -12,6 +12,6 @@ An implementation of "The Anatomy of a Large-Scale Hypertextual Web Search Engin
 
 # Required Packages to Install
 - numpy
-- nltk
+- tqdm
 
 Use "python -m pip install [package name]" in command line to install
