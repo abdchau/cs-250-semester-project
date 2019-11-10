@@ -6,7 +6,7 @@ from tqdm import tqdm
 inDir = "D:/data/717_webhose-2017-03_20170904123310"
 
 def main():
-        #open lexicon file to load data only once
+  #open lexicon file to load data only once
 	try:
 		with open('lexicon.json', 'r', encoding="utf8") as lexfile:
 			lexicon = json.load(lexfile)
