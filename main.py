@@ -3,7 +3,7 @@ import os
 import string
 from tqdm import tqdm
 
-inDir = "D:/data/717_webhose-2017-03_20170904123310"
+inDir = "C:/Users/mahaasghar/Documents/DSA Project/717_20170904123036/file 1"
 
 def main():
   #open lexicon file to load data only once
@@ -15,7 +15,7 @@ def main():
 		lexicon = dict()
 		wordID = 0            															# add 1 to get wordID for next addition
 		
-	for file in tqdm(os.listdir(inDir)[:33500]):		# run for entire directory to generate complete lexicon
+	for file in tqdm(os.listdir(inDir)[:30000]):		# run for entire directory to generate complete lexicon
 		with open(os.path.join(inDir, file), 'r', encoding="utf8") as f:
 			myDict = json.load(f)
 
@@ -33,7 +33,7 @@ def main():
 			if id == None: 	# if the word is not already present in lexicon, add it
 				lexicon[token] = wordID
 				wordID+=1
-		print("good scene")
+		#print("good scene")
 	with open('lexicon.json', 'w', encoding="utf8") as lexfile:     #write the dictionary to at the end
 		json.dump(lexicon, lexfile)
 
