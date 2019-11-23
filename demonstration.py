@@ -10,7 +10,7 @@ def main():
 		dicc = json.load(f)
 
 	#print(dicc)
-	with open('keys1.txt', 'w') as f:
+	with open('keys.txt', 'w') as f:
 		for key in dicc:
 			f.write(key+"\n")
 
