@@ -1,3 +1,4 @@
+<<<<<<< HEAD:invertedcode.py
 import json
 import os
 import string
@@ -13,7 +14,7 @@ def main1():
 		forward = json.load(findex)
 	docids = list(forward.keys())		#get all docIds from forward index in a list
 
-	with open("lexicon2.json", 'r', encoding="utf8") as lex:
+	with open("lexicon.json", 'r', encoding="utf8") as lex:
 		lexicon = json.load(lex)
 	wordids = list(lexicon.values())
 	wordids = list(map(str, wordids))

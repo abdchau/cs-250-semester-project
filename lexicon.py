@@ -6,8 +6,8 @@ import threading
 from unidecode import unidecode
 from nltk.stem.snowball import EnglishStemmer
 
-#inDir = "D:/data/717_webhose-2017-03_20170904123310"
-inDir = "D:/Uni/Semester 3/DSA/Project/Popular Blog Post Dataset/717_webhose-2017-03_20170904123310"
+inDir = "D:/data/717_webhose-2017-03_20170904123310"
+#inDir = "D:/Uni/Semester 3/DSA/Project/Popular Blog Post Dataset/717_webhose-2017-03_20170904123310"
 
 def lexicon():
 	# if a lexicon already exists, load it. Otherwise create new lexicon
@@ -20,7 +20,7 @@ def lexicon():
 		wordID = 0            															# add 1 to get wordID for next addition
 	
 	stemmer = EnglishStemmer()
-	for file in tqdm(os.listdir(inDir)[:15]):		# run for entire directory to generate complete lexicon
+	for file in tqdm(os.listdir(inDir)[:100]):		# run for entire directory to generate complete lexicon
 		with open(os.path.join(inDir, file), 'r', encoding="utf8") as f:
 			myDict = json.load(f)
 
