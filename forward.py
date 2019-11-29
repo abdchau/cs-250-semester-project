@@ -28,7 +28,7 @@ def getIndexPositions(listOfElements, element):
 
 def main1():
 
-	with open('lexicon.json', 'r', encoding="utf8") as lexfile:
+	with open('lexicon2.json', 'r', encoding="utf8") as lexfile:
 		lexicon = json.load(lexfile)
 	wordID = lexicon[list(lexicon.keys())[-1]] + 1		# get the last wordID in the lexicon,            															# add 1 to get wordID for next addition
 	try:
@@ -37,8 +37,7 @@ def main1():
 		print(docrepos)
 	except FileNotFoundError:
 		docrepos = dict()
-
-	for file in tqdm(os.listdir(inDir)[:5]):		# run for 3 files to generate doc id with words and hits
+	for file in tqdm(os.listdir(inDir)[:100]):		# run for 3 files to generate doc id with words and hits
 		position = dict()
 		docId = inDir[-3:] + file[-11:-5]               #unique docID for every blog
 		with open(os.path.join(inDir,file),'r',encoding='utf8') as f:
