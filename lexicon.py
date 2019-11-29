@@ -3,10 +3,11 @@ import os
 import string
 from tqdm import tqdm
 
-inDir = "D:/data/717_webhose-2017-03_20170904123310"
+#inDir = "D:/data/717_webhose-2017-03_20170904123310"
+inDir = "D:/Uni/Semester 3/DSA/Project/Popular Blog Post Dataset/717_webhose-2017-03_20170904123310"
 
-def main():
-  #open lexicon file to load data only once
+def lexicon():
+	# open lexicon file to load data only once
 	try:
 		with open('lexicon.json', 'r', encoding="utf8") as lexfile:
 			lexicon = json.load(lexfile)
@@ -33,8 +34,8 @@ def main():
 			if id == None: 	# if the word is not already present in lexicon, add it
 				lexicon[token] = wordID
 				wordID+=1
-		print("good scene")
+
 	with open('lexicon.json', 'w', encoding="utf8") as lexfile:     #write the dictionary to at the end
 		json.dump(lexicon, lexfile)
 
-main()
+lexicon()
