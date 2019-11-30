@@ -3,17 +3,17 @@ import os
 import string
 from tqdm import tqdm
 
-path = 'D:/cs-250-semester-project/forward.json'
+# path = 'D:/cs-250-semester-project/forward.json'
 
-def generateInvertedIndex():
+def generateInvertedIndex(dictDir):
 	wordids = []
 	inverted = dict()
 
-	with open(path, 'r', encoding="utf8") as findex:
+	with open(os.path.join(dictDir, 'forward.json'), 'r', encoding="utf8") as findex:
 		forward = json.load(findex)
 	docids = list(forward.keys())		#get all docIds from forward index in a list
 
-	with open("./dicts/lexicon.json", 'r', encoding="utf8") as lex:
+	with open(os.path.join(dictDir, "lexicon.json"), 'r', encoding="utf8") as lex:
 		lexicon = json.load(lex)
 	wordids = list(lexicon.values())
 	wordids = list(map(str, wordids))
@@ -30,6 +30,6 @@ def generateInvertedIndex():
 												# dictionary with docid as key and hits and position as value
 												
 		inverted[id] = indoc					# store the subdictionary in another dictionary with wordid as key
-	print(inverted)
-	with open("./dicts/inverted.json",'w',encoding = "utf8") as docfile:     	#writing the dict into file
-		json.dump(inverted,docfile)
+	# print(inverted)
+	with open(os.path.join(dictDir, "inverted.json"), 'w', encoding = "utf8") as docfile:     	#writing the dict into file
+		json.dump(inverted, docfile, indent=2)

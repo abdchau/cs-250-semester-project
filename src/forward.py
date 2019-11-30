@@ -25,32 +25,24 @@ def getIndexPositions(listOfElements, element):
  
     return indexPosList
 
-def generateForwardIndex():
+def generateForwardIndex(cleanDir, dictDir):
 
-	with open('./dicts/lexicon.json', 'r', encoding="utf8") as lexfile:
+	with open('../dicts/lexicon.json', 'r', encoding="utf8") as lexfile:
 		lexicon = json.load(lexfile)
-	wordID = lexicon[list(lexicon.keys())[-1]] + 1		# get the last wordID in the lexicon,            															# add 1 to get wordID for next addition
 	try:
-		with open('forward.json', 'r', encoding="utf8") as docfile:
+		with open(os.path.join(dictDir, 'forward.json'), 'r', encoding="utf8") as docfile:
 			docrepos = json.load(docfile)
 	except FileNotFoundError:
 		docrepos = dict()
 
-	stemmer = EnglishStemmer()
-	for file in tqdm(os.listdir(inDir)[:100]):		# run for 3 files to generate doc id with words and hits
+	for file in tqdm(os.listdir(cleanDir)):		# run for 3 files to generate doc id with words and hits
 		position = dict()
-		docId = inDir[-3:] + file[-11:-5]			# unique docID for every blog
+		docId = file[-11:-5]			# unique docID for every blog
 
-		with open(os.path.join(inDir,file),'r',encoding='utf8') as f:
-			mydict = json.load(f)
+		with open(os.path.join(cleanDir,file),'r') as f:
+			tokens = f.read()
 
-		text = mydict['text']
-
-		# remove punctuation from the text. Some hardcoding for Unicode characters
-		punc = str.maketrans('', '', string.punctuation)
-		dgts = str.maketrans('', '', string.digits)
-		tokens = unidecode(text.lower()).replace('-', ' ').translate(punc).translate(dgts).split()
-		tokens = [stemmer.stem(token) for token in tokens]
+		tokens = tokens.split()
 		
 		for i in range(len(tokens)):
 			tokens[i] = lexicon[tokens[i]]	          #convert words to their respective wordId
@@ -62,5 +54,5 @@ def generateForwardIndex():
 
 		docrepos[docId] = position									# strong dictionary with wordID,hits and positing against docID
 
-	with open("./dicts/forward.json",'w',encoding = "utf8") as docfile:     	# writing the dict into file
-		json.dump(docrepos,docfile)
+	with open(os.path.join(dictDir, 'forward.json'), 'w', encoding = "utf8") as docfile:     	# writing the dict into file
+		json.dump(docrepos,docfile, indent=2)

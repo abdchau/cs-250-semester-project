@@ -1,13 +1,12 @@
 import json
 import os
 import string
-import threading
 from unidecode import unidecode
 from nltk.stem.snowball import EnglishStemmer
+from nltk.corpus import stopwords
 
-
-def clean(file):
-	stemmer = EnglishStemmer()
+stemmer = EnglishStemmer()
+def clean(file, cleanDir):
 
 	with open(file, 'r', encoding="utf8") as f:
 		myDict = json.load(f)
@@ -18,9 +17,9 @@ def clean(file):
 	punc = str.maketrans('', '', string.punctuation)
 	dgts = str.maketrans('', '', string.digits)
 	tokens = unidecode(text.lower()).replace('-', ' ').translate(punc).translate(dgts).split()
-	tokens = [stemmer.stem(token) for token in tokens]
 
-	with open(os.path.join("./data/cleaned/", file[11:-4]+"txt"), "w+") as f:
-		f.write("".join(tokens))
+	stopWords = set(stopwords.words('english'))
+	tokens = [stemmer.stem(token) for token in tokens if not token in stopWords]
 
-clean("./data/raw/blogs_0000001.json")
+	with open(cleanDir+file[-19:-4]+"txt", "w") as f:
+		f.write(" ".join(tokens))

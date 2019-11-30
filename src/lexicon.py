@@ -10,7 +10,7 @@ from nltk.stem.snowball import EnglishStemmer
 stemmer = EnglishStemmer()
 # if a lexicon already exists, load it. Otherwise create new lexicon
 try:
-	with open('./dicts/lexicon.json', 'r', encoding="utf8") as lexfile:
+	with open('../dicts/lexicon.json', 'r', encoding="utf8") as lexfile:
 		lexicon = json.load(lexfile)
 	wordID = lexicon[list(lexicon.keys())[-1]] + 1      # get the last wordID in the lexicon,
 														# add 1 to get wordID for next addition
@@ -19,16 +19,16 @@ except FileNotFoundError:
 	wordID = 0
 
 def processFile(file):
-	with open(file, 'r', encoding="utf8") as f:
-		myDict = json.load(f)
+	with open(file, 'r') as f:
+		tokens = f.read()
 
-	text = myDict['text']
+	tokens = tokens.split()
 
 	# remove punctuation from the text, and "simplify" unicode characters
-	punc = str.maketrans('', '', string.punctuation)
-	dgts = str.maketrans('', '', string.digits)
-	tokens = unidecode(text.lower()).replace('-', ' ').translate(punc).translate(dgts).split()
-	tokens = [stemmer.stem(token) for token in tokens]
+	# punc = str.maketrans('', '', string.punctuation)
+	# dgts = str.maketrans('', '', string.digits)
+	# tokens = unidecode(text.lower()).replace('-', ' ').translate(punc).translate(dgts).split()
+	# tokens = [stemmer.stem(token) for token in tokens]
 
 	global lexicon, wordID
 	for token in tokens:
@@ -37,11 +37,11 @@ def processFile(file):
 			lexicon[token] = wordID
 			wordID+=1
 
-def generateLexicon():
+def generateLexicon(cleanDir):
 
-	for file in tqdm(os.listdir(inDir)[:10000]):
-		processFile(os.path.join(inDir, file))
+	for file in tqdm(os.listdir(cleanDir)):
+		processFile(os.path.join(cleanDir, file))
 
 	global lexicon
-	with open('./dicts/lexicon.json', 'w', encoding="utf8") as lexfile:     # write the dictionary to at the end
+	with open('../dicts/lexicon.json', 'w', encoding="utf8") as lexfile:     # write the dictionary to at the end
 		json.dump(lexicon, lexfile, indent=2)
