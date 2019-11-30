@@ -1,4 +1,3 @@
-<<<<<<< HEAD:invertedcode.py
 import json
 import os
 import string
@@ -6,7 +5,7 @@ from tqdm import tqdm
 
 path = 'D:/cs-250-semester-project/forward.json'
 
-def main1():
+def generateInvertedIndex():
 	wordids = []
 	inverted = dict()
 
@@ -31,5 +30,4 @@ def main1():
 		inverted[id] = indoc				#store the subdictionary in another dictionary with wordid as key
 	print(inverted)
 	with open("inverted.json",'w',encoding = "utf8") as docfile:     	#writing the dict into file
-		json.dump(inverted,docfile)	
-main1()
+		json.dump(inverted,docfile)
