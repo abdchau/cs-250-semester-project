@@ -27,7 +27,7 @@ def getIndexPositions(listOfElements, element):
 
 def generateForwardIndex(cleanDir, dictDir):
 
-	with open('../dicts/lexicon.json', 'r', encoding="utf8") as lexfile:
+	with open(os.path.join(dictDir, 'lexicon.json'), 'r', encoding="utf8") as lexfile:
 		lexicon = json.load(lexfile)
 	try:
 		with open(os.path.join(dictDir, 'forward.json'), 'r', encoding="utf8") as docfile:
@@ -37,7 +37,7 @@ def generateForwardIndex(cleanDir, dictDir):
 
 	for file in tqdm(os.listdir(cleanDir)):		# run for 3 files to generate doc id with words and hits
 		position = dict()
-		docId = file[-11:-5]			# unique docID for every blog
+		docId = file[-10:-4]			# unique docID for every blog
 
 		with open(os.path.join(cleanDir,file),'r') as f:
 			tokens = f.read()
