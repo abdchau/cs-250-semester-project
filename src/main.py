@@ -19,7 +19,7 @@ def main():
 	for file in os.listdir(os.path.join(rawDir)):
 		clean(os.path.join(rawDir, file), cleanDir)
 
-	generateLexicon(cleanDir)
+	generateLexicon(cleanDir, dictDir)
 	generateForwardIndex(cleanDir, dictDir)
 	generateInvertedIndex(dictDir)
 

@@ -26,7 +26,41 @@ def getIndexPositions(listOfElements, element):
     return indexPosList
 
 def generateForwardIndex(cleanDir, dictDir):
+	"""
+	parameters: cleanDir - the path of the directory containing
+	processed documents.
 
+	dictDir - the path of the directory containing the dictionaries
+	for the lexicon and the forward index.
+
+	This function will iterate through every file in the given
+	cleaned directory and using the lexicon, will generate
+	the forward index. For each file, a dictionary will be
+	generated and added to the forward index dictionary.
+
+	The forward index is a dictionary of dictionaries of the form:
+	{
+		docID : 
+			{
+				wordID : [
+					number of hits of this word,
+					location of first hit,
+					location of second hit,
+					.
+					.
+					.
+				],
+				.
+				.
+				.
+			},
+		.
+		.
+		.
+	}
+
+	return: void
+	"""
 	with open(os.path.join(dictDir, 'lexicon.json'), 'r', encoding="utf8") as lexfile:
 		lexicon = json.load(lexfile)
 	try:
@@ -52,7 +86,7 @@ def generateForwardIndex(cleanDir, dictDir):
 			indexposition.insert(0,len(indexposition))				# insert hits of each word at the beginning
 			position[tokens[i]] = indexposition						# storing list of hits and positions against wordID
 
-		docrepos[docId] = position									# strong dictionary with wordID,hits and positing against docID
+		docrepos[docId] = position				# storing dictionary with wordID, hits and locations against docID
 
-	with open(os.path.join(dictDir, 'forward.json'), 'w', encoding = "utf8") as docfile:     	# writing the dict into file
+	with open(os.path.join(dictDir, 'forward.json'), 'w', encoding = "utf8") as docfile:
 		json.dump(docrepos,docfile, indent=2)

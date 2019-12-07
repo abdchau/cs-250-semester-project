@@ -7,7 +7,19 @@ from nltk.corpus import stopwords
 
 stemmer = EnglishStemmer()
 def clean(file, cleanDir):
+	"""
+	parameters: file - the path to the file that is to be
+	cleaned.
 
+	cleanDir - the path to the directory where the cleaned
+	files are to be written.
+
+	This function will read a utf-8 encoded file and generate
+	an ascii file stripped of digits and punctuation. It
+	will also remove stop words.
+
+	return: void
+	"""
 	with open(file, 'r', encoding="utf8") as f:
 		myDict = json.load(f)
 
