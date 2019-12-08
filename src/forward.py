@@ -81,10 +81,15 @@ def generateForwardIndex(cleanDir, dictDir):
 		for i in range(len(tokens)):
 			tokens[i] = lexicon[tokens[i]]	          #convert words to their respective wordId
 
-		for i in range(len(tokens)):	
-			indexposition = getIndexPositions(tokens,tokens[i])		# get list with position of each element
-			indexposition.insert(0,len(indexposition))				# insert hits of each word at the beginning
-			position[tokens[i]] = indexposition						# storing list of hits and positions against wordID
+		for i in range(len(tokens)):
+			if(tokens[i] != None):										#  do processing if there is a word in list
+				indexposition = getIndexPositions(tokens,tokens[i])		# get list with position of each element
+
+				for index in indexposition:								# remove the repeated words in list
+					tokens[index] = None
+
+				indexposition.insert(0,len(indexposition))				# insert hits of each word at the beginning
+				position[tokens[i]] = indexposition						# storing list of hits and positions against wordID
 
 		docrepos[docId] = position				# storing dictionary with wordID, hits and locations against docID
 
