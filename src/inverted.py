@@ -59,12 +59,10 @@ def generateInvertedIndex(dictDir):
 
 		for docID in docIDs:
 
-			if(forward[docID].get(wordID) == None):	# check if wordID exists in the subdictionary of docID
-				continue							# go to next subdictionary if wordid is not present
+			if(forward[docID].get(wordID) != None):	# do processing if wordID exists in the subdictionary of docID
+			# get hits and position from subdictionary and store it in new dictionary with docID as key and hits and position as value								
+				indoc[docID] = forward[docID][wordID]		
 
-			indoc[docID] = forward[docID][wordID]		# get hits and position from subdictionary and store it in new
-													# dictionary with docID as key and hits and position as value
-												
 		inverted[wordID] = indoc					# store the subdictionary in another dictionary with wordID as key
 
 	with open(os.path.join(dictDir, "inverted.json"), 'w', encoding = "utf8") as docfile:
