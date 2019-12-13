@@ -6,6 +6,7 @@ import collections
 import numpy as np
 from unidecode import unidecode
 from nltk.stem.snowball import EnglishStemmer
+from multiprocessing import Process, Lock
 
 
 def getIndexPositions(listOfElements, element):
@@ -24,6 +25,42 @@ def getIndexPositions(listOfElements, element):
             break
  
     return indexPosList
+
+def processFile(lexicon, forwardIndex, tokens, docID):
+	"""
+	parameters: lexicon - the lexicon to be used for indexing
+
+	forwardIndex - the dictionary in which the forward index
+	is to be stored
+
+	file - the file whose forward index is to be generated
+
+	lock - the multiprocessing lock. This must be acquired
+	before adding data to the forwardIndex to maintain data
+	integrity.
+
+	returns: void
+
+	This function expects to be called by multiple threads.
+	"""
+
+	position = dict()
+	
+	for i in range(len(tokens)):
+		tokens[i] = lexicon[tokens[i]]	          #convert words to their respective wordId
+
+	for i in range(len(tokens)):
+		if tokens[i] is not None:										#  do processing if there is a word in list
+			indexposition = getIndexPositions(tokens,tokens[i])		# get list with position of each element
+			indexposition.insert(0,len(indexposition))				# insert hits of each word at the beginning
+			position[tokens[i]] = indexposition						# storing list of hits and positions against wordID
+			
+			for index in indexposition:								# remove the repeated words in list
+				tokens[index] = None
+	
+
+	forwardIndex[docID] = position				# storing dictionary with wordID, hits and locations against docID
+
 
 def generateForwardIndex(cleanDir, dictDir):
 	"""
@@ -60,38 +97,35 @@ def generateForwardIndex(cleanDir, dictDir):
 	}
 
 	return: void
+
+	This function expects to be called by the main thread
 	"""
 	with open(os.path.join(dictDir, 'lexicon.json'), 'r', encoding="utf8") as lexfile:
 		lexicon = json.load(lexfile)
 	try:
 		with open(os.path.join(dictDir, 'forward.json'), 'r', encoding="utf8") as docfile:
-			docrepos = json.load(docfile)
+			forwardIndex = json.load(docfile)
 	except FileNotFoundError:
-		docrepos = dict()
+		forwardIndex = dict()
 
-	for file in tqdm(os.listdir(cleanDir)):		# run for 3 files to generate doc id with words and hits
-		position = dict()
-		docId = file[-10:-4]			# unique docID for every blog
-
-		with open(os.path.join(cleanDir,file),'r') as f:
-			tokens = f.read()
-
-		tokens = tokens.split()
+	lock = Lock()
+	processes = []
+	for file in tqdm(os.listdir(cleanDir)):
+		processes.append(Process(target=processFile, 
+			args=(lexicon, forwardIndex, os.path.join(cleanDir, file))))
+		processes[-1].start()
 		
-		for i in range(len(tokens)):
-			tokens[i] = lexicon[tokens[i]]	          #convert words to their respective wordId
+		# processFile(lexicon, forwardIndex, os.path.join(cleanDir, file))
+		if len(processes) > 1:
+			for p in processes:
+				p.join()
 
-		for i in range(len(tokens)):
-			if(tokens[i] != None):										#  do processing if there is a word in list
-				indexposition = getIndexPositions(tokens,tokens[i])		# get list with position of each element
-
-				for index in indexposition:								# remove the repeated words in list
-					tokens[index] = None
-
-				indexposition.insert(0,len(indexposition))				# insert hits of each word at the beginning
-				position[tokens[i]] = indexposition						# storing list of hits and positions against wordID
-
-		docrepos[docId] = position				# storing dictionary with wordID, hits and locations against docID
+	for p in processes:
+		p.join()
 
 	with open(os.path.join(dictDir, 'forward.json'), 'w', encoding = "utf8") as docfile:
-		json.dump(docrepos,docfile, indent=2)
+		json.dump(forwardIndex,docfile, indent=2)
+
+def dump(dictDir, forwardIndex):
+	with open(os.path.join(dictDir, 'forward.json'), 'w', encoding = "utf8") as forwardFile:
+		json.dump(forwardIndex, forwardFile, indent=2)

@@ -15,7 +15,7 @@ except FileNotFoundError:
 	lexicon = dict()
 	wordID = 0
 
-def processFile(file):
+def processFile(lexicon, wordID, tokens):
 	"""
 	parameters: file - path to file from which lexicon is to be generated
 
@@ -24,17 +24,14 @@ def processFile(file):
 
 	return: void
 	"""
-	with open(file, 'r') as f:
-		tokens = f.read()
-
-	tokens = tokens.split()
 
 	# if the word is not already present in lexicon, add it
-	global lexicon, wordID
 	for token in tokens:
 		if lexicon.get(token) == None:
 			lexicon[token] = wordID
 			wordID+=1
+
+	return wordID
 
 def generateLexicon(cleanDir, dictDir):
 	"""
@@ -58,3 +55,7 @@ def generateLexicon(cleanDir, dictDir):
 	global lexicon
 	with open(os.path.join(dictDir, 'lexicon.json'), 'w', encoding="utf8") as lexfile:
 		json.dump(lexicon, lexfile, indent=2)
+
+def dump(dictDir, lexicon):
+	with open(os.path.join(dictDir, 'lexicon.json'), 'w', encoding="utf8") as lexFile:
+		json.dump(lexicon, lexFile, indent=2)
