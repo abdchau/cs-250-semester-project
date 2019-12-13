@@ -17,13 +17,13 @@ def readLexForward(dictDir):
 		lexicon = dict()
 		wordID = 0
 
-	try:
-		with open(os.path.join(dictDir, 'forward.json'), 'r', encoding="utf8") as forwardFile:
-			forwardIndex = json.load(forwardFile)
-	except FileNotFoundError:
-		forwardIndex = dict()
+	# try:
+	# 	with open(os.path.join(dictDir, 'forward.json'), 'r', encoding="utf8") as forwardFile:
+	# 		forwardIndex = json.load(forwardFile)
+	# except FileNotFoundError:
+	# 	forwardIndex = dict()
 
-	return lexicon, wordID, forwardIndex
+	return lexicon, wordID
 
 
 def main():
@@ -34,26 +34,29 @@ def main():
 	dictDir = r"..\dicts"
 
 	print(datetime.datetime.now(), "Reading lexicon and forward index from file")
-	lexicon, wordID, forwardIndex = readLexForward(dictDir)
+	lexicon, wordID = readLexForward(dictDir)
+	forwardIndex = []
 
 	if not os.path.exists(cleanDir):
 		os.makedirs(cleanDir)
 
 	print(datetime.datetime.now(), "Generating lexicon and forward index")
-	forwardBarrel = 0
+	forwardBarrel = -1
 	for docID, file in tqdm(enumerate(os.listdir(os.path.join(rawDir)))):
 		tokens = clean(os.path.join(rawDir, file))
 
 		if docID % 4 == 0:
 			forwardBarrel+=1
+			forwardIndex.append(dict())
+
 		wordID = L.processFile(lexicon, wordID, tokens)
-		forward.processFile(lexicon, forwardIndex, tokens, docID+100000)
+		forward.processFile(lexicon, forwardIndex[forwardBarrel], tokens, docID+100000)
 
 	print(datetime.datetime.now(), "Writing lexicon and forward index to file")
 	L.dump(dictDir, lexicon)
 	forward.dump(dictDir, forwardIndex)
 
-	inverted.generateInvertedIndex(dictDir)
+	# inverted.generateInvertedIndex(dictDir)
 
 if __name__ == "__main__":
 	main()

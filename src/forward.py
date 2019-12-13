@@ -127,5 +127,11 @@ def generateForwardIndex(cleanDir, dictDir):
 		json.dump(forwardIndex,docfile, indent=2)
 
 def dump(dictDir, forwardIndex):
-	with open(os.path.join(dictDir, 'forward.json'), 'w', encoding = "utf8") as forwardFile:
-		json.dump(forwardIndex, forwardFile, indent=2)
+	path = os.path.join(dictDir, 'forward_barrels')
+
+	if not os.path.exists(path):
+		os.makedirs(path)
+
+	for barrel, fIndex in enumerate(forwardIndex):
+		with open(os.path.join(path, 'forward_'+str(barrel)+'.json'), 'w', encoding = "utf8") as forwardFile:
+			json.dump(fIndex, forwardFile, indent=2)
