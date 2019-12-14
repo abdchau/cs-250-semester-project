@@ -9,7 +9,7 @@ from nltk.stem.snowball import EnglishStemmer
 from multiprocessing import Process, Lock
 
 
-def getIndexPositions(listOfElements, element):
+def getHits(listOfElements, element):
     ''' Returns the indexes of all occurrences of give element in
     the list- listOfElements '''
     indexPosList = []
@@ -26,7 +26,9 @@ def getIndexPositions(listOfElements, element):
  
     return indexPosList
 
-def processFile(lexicon, forwardIndex, tokens, docID):
+# def barrelify
+
+def processFile(lexicon, forwardBarrels, barrelLength, tokens, docID):
 	"""
 	parameters: lexicon - the lexicon to be used for indexing
 
@@ -43,23 +45,28 @@ def processFile(lexicon, forwardIndex, tokens, docID):
 
 	This function expects to be called by multiple threads.
 	"""
-
-	position = dict()
 	
-	for i in range(len(tokens)):
-		tokens[i] = lexicon[tokens[i]]	          #convert words to their respective wordId
+	# for i in range(len(tokens)):
+	# 	tokens[i] = lexicon[tokens[i]]	          #convert words to their respective wordId
 
 	for i in range(len(tokens)):
-		if tokens[i] is not None:										#  do processing if there is a word in list
-			indexposition = getIndexPositions(tokens,tokens[i])		# get list with position of each element
-			indexposition.insert(0,len(indexposition))				# insert hits of each word at the beginning
-			position[tokens[i]] = indexposition						# storing list of hits and positions against wordID
+
+		if tokens[i] is not None:
+			barrel = lexicon[tokens[i]]//barrelLength
+
+			hits = getHits(tokens,tokens[i])
+
+			if forwardBarrels.get(barrel) is None:
+				forwardBarrels[barrel] = dict()
+
+			if forwardBarrels[barrel].get(docID) is None:
+				forwardBarrels[barrel][docID] = dict()
+
+			forwardBarrels[barrel][docID][lexicon[tokens[i]]] = hits
 			
-			for index in indexposition:								# remove the repeated words in list
+			# remove the repeated words in list
+			for index in hits:
 				tokens[index] = None
-	
-
-	forwardIndex[docID] = position				# storing dictionary with wordID, hits and locations against docID
 
 
 def generateForwardIndex(cleanDir, dictDir):
@@ -126,12 +133,11 @@ def generateForwardIndex(cleanDir, dictDir):
 	with open(os.path.join(dictDir, 'forward.json'), 'w', encoding = "utf8") as docfile:
 		json.dump(forwardIndex,docfile, indent=2)
 
-def dump(dictDir, forwardIndex):
+def dump(dictDir, forwardBarrels):
 	path = os.path.join(dictDir, 'forward_barrels')
 
-	if not os.path.exists(path):
-		os.makedirs(path)
-
-	for barrel, fIndex in enumerate(forwardIndex):
-		with open(os.path.join(path, 'forward_'+str(barrel)+'.json'), 'w', encoding = "utf8") as forwardFile:
-			json.dump(fIndex, forwardFile, indent=2)
+	os.makedirs(path, exist_ok=True)
+	
+	for barrel, forwardIndex in enumerate(forwardBarrels.values()):
+		with open(os.path.join(path, f'forward_{barrel}.json'), 'w', encoding = "utf8") as forwardFile:
+			json.dump(forwardIndex, forwardFile, indent=2)

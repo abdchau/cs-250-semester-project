@@ -5,7 +5,9 @@ import forward
 import inverted
 from cleanText import clean
 import json
-import datetime
+from datetime import datetime
+
+barrelLength = 500
 
 def readLexForward(dictDir):
 	try:
@@ -33,29 +35,27 @@ def main():
 	cleanDir = r"..\data\cleaned"
 	dictDir = r"..\dicts"
 
-	print(datetime.datetime.now(), "Reading lexicon and forward index from file")
+	print(datetime.now(), "Reading lexicon and forward index from file")
 	lexicon, wordID = readLexForward(dictDir)
-	forwardIndex = []
 
-	if not os.path.exists(cleanDir):
-		os.makedirs(cleanDir)
+	os.makedirs(cleanDir, exist_ok=True)
 
-	print(datetime.datetime.now(), "Generating lexicon and forward index")
-	forwardBarrel = -1
-	for docID, file in tqdm(enumerate(os.listdir(os.path.join(rawDir)))):
+	print(datetime.now(), "Generating lexicon and forward index")
+	
+	forwardBarrels = dict()
+	for docID, file in enumerate(os.listdir(os.path.join(rawDir))):
 		tokens = clean(os.path.join(rawDir, file))
 
-		if docID % 4 == 0:
-			forwardBarrel+=1
-			forwardIndex.append(dict())
 
 		wordID = L.processFile(lexicon, wordID, tokens)
-		forward.processFile(lexicon, forwardIndex[forwardBarrel], tokens, docID+100000)
+		forward.processFile(lexicon, forwardBarrels, barrelLength, tokens, docID+100000)
 
-	print(datetime.datetime.now(), "Writing lexicon and forward index to file")
+	print(datetime.now(), "Writing lexicon and forward index to file")
 	L.dump(dictDir, lexicon)
-	forward.dump(dictDir, forwardIndex)
+	forward.dump(dictDir, forwardBarrels)
 
+	for i, file in enumerate(os.listdir(os.path.join(dictDir,'forward_barrels'))):
+		inverted.processFile(dictDir, file, i, barrelLength)
 	# inverted.generateInvertedIndex(dictDir)
 
 if __name__ == "__main__":

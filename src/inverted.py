@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 # path = 'D:/cs-250-semester-project/forward.json'
 
-def generateInvertedIndex(dictDir):
+def processFile(dictDir, forwardFile, barrel, barrelLength):
 	"""
 	parameters: dictDir - the path of the directory containing the
 	dictionaries for the forward and the inverted index.
@@ -42,28 +42,38 @@ def generateInvertedIndex(dictDir):
 
 	return: void
 	"""
-	wordIDs = []
 	inverted = dict()
 
-	with open(os.path.join(dictDir, 'forward.json'), 'r', encoding="utf8") as findex:
+	with open(os.path.join(dictDir+"\\forward_barrels", forwardFile), 'r', encoding="utf8") as findex:
 		forward = json.load(findex)
 	docIDs = list(forward.keys())		# get all docIDs from forward index in a list
+	# print(docIDs)
+	# with open(os.path.join(dictDir, "lexicon.json"), 'r', encoding="utf8") as lex:
+	# 	lexicon = json.load(lex)
 
-	with open(os.path.join(dictDir, "lexicon.json"), 'r', encoding="utf8") as lex:
-		lexicon = json.load(lex)
+	# wordIDs = list(map(str, list(lexicon.values())))
 
-	wordIDs = list(map(str, list(lexicon.values())))
-
-	for wordID in tqdm(wordIDs):
+	minWordID = barrel * barrelLength
+	for wordID in range(minWordID, minWordID+barrelLength):
 		indoc = dict()
 
 		for docID in docIDs:
 
-			if(forward[docID].get(wordID) != None):	# do processing if wordID exists in the subdictionary of docID
+			if(forward[docID].get(str(wordID)) != None):	# do processing if wordID exists in the subdictionary of docID
 			# get hits and position from subdictionary and store it in new dictionary with docID as key and hits and position as value								
-				indoc[docID] = forward[docID][wordID]		
-
+				indoc[docID] = forward[docID][str(wordID)]
+				print(indoc, "hello")
+				# continue
+		# for k in sorted(indoc, key=lambda k: len(inverted[k]), reverse=True):
+		# 	print k,
+		# exit()
 		inverted[wordID] = indoc					# store the subdictionary in another dictionary with wordID as key
 
-	with open(os.path.join(dictDir, "inverted.json"), 'w', encoding = "utf8") as docfile:
+
+	path = os.path.join(dictDir, 'inverted_barrels')
+	os.makedirs(path, exist_ok=True)
+
+	with open(os.path.join(path, f"inverted_{forwardFile[8]}.json"), 'w', encoding = "utf8") as docfile:
 		json.dump(inverted, docfile, indent=2)
+
+# processFile(r"..\dicts", "forward.json")
