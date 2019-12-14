@@ -1,12 +1,7 @@
 import json
 import os
-import string
 from tqdm import tqdm
 import collections
-import numpy as np
-from unidecode import unidecode
-from nltk.stem.snowball import EnglishStemmer
-from multiprocessing import Process, Lock
 
 
 def getHits(listOfElements, element):
@@ -26,42 +21,52 @@ def getHits(listOfElements, element):
  
     return indexPosList
 
-# def barrelify
-
 def processFile(lexicon, forwardBarrels, barrelLength, tokens, docID):
 	"""
-	parameters: lexicon - the lexicon to be used for indexing
+	arguments:
+		- lexicon: the lexicon to be used for indexing
+		- forwardBarrels: the dictionary in which the forward 
+		indices are to be stored. Each forward index is of 
+		the form:
+		{
+			docID : 
+				{
+					wordID : [
+						number of hits of this word,
+						location of first hit,
+						location of second hit,
+						...
+					],
+					...
+				},
+			...
+		}
+		- barrelLength: the range of words in one barrel
+		- tokens: the cleaned words in the file
+		- docID: the unique ID assigned to the file
 
-	forwardIndex - the dictionary in which the forward index
-	is to be stored
+	This function will add hits for every word present in
+	the file to the correct dictionary according to barrel
+	number, docID and wordID
 
-	file - the file whose forward index is to be generated
-
-	lock - the multiprocessing lock. This must be acquired
-	before adding data to the forwardIndex to maintain data
-	integrity.
-
-	returns: void
-
-	This function expects to be called by multiple threads.
+	returns: None
 	"""
-	
-	# for i in range(len(tokens)):
-	# 	tokens[i] = lexicon[tokens[i]]	          #convert words to their respective wordId
-
 	for i in range(len(tokens)):
 
 		if tokens[i] is not None:
+
+			# choose barrel
 			barrel = lexicon[tokens[i]]//barrelLength
 
-			hits = getHits(tokens,tokens[i])
 
+			# prepare dictionary for hits insertion
 			if forwardBarrels.get(barrel) is None:
 				forwardBarrels[barrel] = dict()
-
 			if forwardBarrels[barrel].get(docID) is None:
 				forwardBarrels[barrel][docID] = dict()
 
+			# insert the hits
+			hits = getHits(tokens,tokens[i])
 			forwardBarrels[barrel][docID][lexicon[tokens[i]]] = hits
 			
 			# remove the repeated words in list
@@ -69,73 +74,20 @@ def processFile(lexicon, forwardBarrels, barrelLength, tokens, docID):
 				tokens[index] = None
 
 
-def generateForwardIndex(cleanDir, dictDir):
-	"""
-	parameters: cleanDir - the path of the directory containing
-	processed documents.
-
-	dictDir - the path of the directory containing the dictionaries
-	for the lexicon and the forward index.
-
-	This function will iterate through every file in the given
-	cleaned directory and using the lexicon, will generate
-	the forward index. For each file, a dictionary will be
-	generated and added to the forward index dictionary.
-
-	The forward index is a dictionary of dictionaries of the form:
-	{
-		docID : 
-			{
-				wordID : [
-					number of hits of this word,
-					location of first hit,
-					location of second hit,
-					.
-					.
-					.
-				],
-				.
-				.
-				.
-			},
-		.
-		.
-		.
-	}
-
-	return: void
-
-	This function expects to be called by the main thread
-	"""
-	with open(os.path.join(dictDir, 'lexicon.json'), 'r', encoding="utf8") as lexfile:
-		lexicon = json.load(lexfile)
-	try:
-		with open(os.path.join(dictDir, 'forward.json'), 'r', encoding="utf8") as docfile:
-			forwardIndex = json.load(docfile)
-	except FileNotFoundError:
-		forwardIndex = dict()
-
-	lock = Lock()
-	processes = []
-	for file in tqdm(os.listdir(cleanDir)):
-		processes.append(Process(target=processFile, 
-			args=(lexicon, forwardIndex, os.path.join(cleanDir, file))))
-		processes[-1].start()
-		
-		# processFile(lexicon, forwardIndex, os.path.join(cleanDir, file))
-		if len(processes) > 1:
-			for p in processes:
-				p.join()
-
-	for p in processes:
-		p.join()
-
-	with open(os.path.join(dictDir, 'forward.json'), 'w', encoding = "utf8") as docfile:
-		json.dump(forwardIndex,docfile, indent=2)
-
 def dump(dictDir, forwardBarrels):
-	path = os.path.join(dictDir, 'forward_barrels')
+	"""
+	arguments:
+		- dictDir: the path of the directory containing the
+		dictionaries for the lexicon and the forward index.
+		- forwardBarrels: the dictionary in which the forward
+		indices are stored. The form is described above.
 
+	This function will iterate through the forward barrels
+	and will write each to file.
+
+	return: None
+	"""
+	path = os.path.join(dictDir, 'forward_barrels')
 	os.makedirs(path, exist_ok=True)
 	
 	for barrel, forwardIndex in enumerate(forwardBarrels.values()):

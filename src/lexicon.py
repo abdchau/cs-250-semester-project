@@ -5,19 +5,11 @@ from tqdm import tqdm
 from unidecode import unidecode
 
 
-# if a lexicon already exists, load it. Otherwise create new lexicon
-try:
-	with open('../dicts/lexicon.json', 'r', encoding="utf8") as lexfile:
-		lexicon = json.load(lexfile)
-	wordID = lexicon[list(lexicon.keys())[-1]] + 1      # get the last wordID in the lexicon,
-														# add 1 to get wordID for next addition
-except FileNotFoundError:
-	lexicon = dict()
-	wordID = 0
-
 def processFile(lexicon, wordID, tokens):
 	"""
-	parameters: file - path to file from which lexicon is to be generated
+	arguments:
+		- file: path to file from which lexicon is
+		to be generated
 
 	Everytime this function is called, words from another clean file will
 	be added to the lexicon.
@@ -35,8 +27,9 @@ def processFile(lexicon, wordID, tokens):
 
 def generateLexicon(cleanDir, dictDir):
 	"""
-	parameters: cleanDir - the path of the directory containing
-	processed documents.
+	arguments:
+		- cleanDir: the path of the directory containing
+		processed documents.
 
 	This function will iterate through every file in the given
 	cleaned directory and add new words found to the lexicon.
@@ -47,7 +40,7 @@ def generateLexicon(cleanDir, dictDir):
 		...
 	}
 
-	return: void
+	return: None
 	"""
 	for file in tqdm(os.listdir(cleanDir)):
 		processFile(os.path.join(cleanDir, file))
@@ -55,6 +48,28 @@ def generateLexicon(cleanDir, dictDir):
 	global lexicon
 	with open(os.path.join(dictDir, 'lexicon.json'), 'w', encoding="utf8") as lexfile:
 		json.dump(lexicon, lexfile, indent=2)
+
+def load(dictDir):
+	"""
+	arguments: 
+		- dictDir: the path of the directory containing the
+		lexicon.
+
+	This function reads the lexicon from file. If the file
+	does not exist, it initializes a new lexicon.
+
+	return: a dictionary containing the loaded/new lexicon
+	"""
+	try:
+		with open(os.path.join(dictDir, 'lexicon.json'), 'r', encoding="utf8") as lexFile:
+			lexicon = json.load(lexFile)
+		wordID = lexicon[list(lexicon.keys())[-1]] + 1      # get the last wordID in the lexicon,
+															# add 1 to get wordID for next addition
+	except FileNotFoundError:
+		lexicon = dict()
+		wordID = 0
+
+	return lexicon, wordID
 
 def dump(dictDir, lexicon):
 	with open(os.path.join(dictDir, 'lexicon.json'), 'w', encoding="utf8") as lexFile:
