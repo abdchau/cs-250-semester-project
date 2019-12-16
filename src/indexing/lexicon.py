@@ -2,7 +2,6 @@ import json
 import os
 import string
 from tqdm import tqdm
-from unidecode import unidecode
 
 
 def processFile(lexicon, wordID, tokens):
@@ -25,29 +24,9 @@ def processFile(lexicon, wordID, tokens):
 
 	return wordID
 
-def generateLexicon(cleanDir, dictDir):
-	"""
-	arguments:
-		- cleanDir: the path of the directory containing
-		processed documents.
 
-	This function will iterate through every file in the given
-	cleaned directory and add new words found to the lexicon.
-
-	The lexicon is a dictionary of the form:
-	{
-		"token" : wordID,
-		...
-	}
-
-	return: None
-	"""
-	for file in tqdm(os.listdir(cleanDir)):
-		processFile(os.path.join(cleanDir, file))
-
-	global lexicon
-	with open(os.path.join(dictDir, 'lexicon.json'), 'w', encoding="utf8") as lexfile:
-		json.dump(lexicon, lexfile, indent=2)
+def getNewWordID(lexicon):
+	return lexicon[list(lexicon.keys())[-1]] + 1
 
 def load(dictDir):
 	"""
@@ -63,13 +42,14 @@ def load(dictDir):
 	try:
 		with open(os.path.join(dictDir, 'lexicon.json'), 'r', encoding="utf8") as lexFile:
 			lexicon = json.load(lexFile)
-		wordID = lexicon[list(lexicon.keys())[-1]] + 1      # get the last wordID in the lexicon,
+		wordID = getNewWordID(lexicon) # get the last wordID in the lexicon,
 															# add 1 to get wordID for next addition
 	except FileNotFoundError:
 		lexicon = dict()
 		wordID = 0
 
 	return lexicon, wordID
+
 
 def dump(dictDir, lexicon):
 	with open(os.path.join(dictDir, 'lexicon.json'), 'w', encoding="utf8") as lexFile:
