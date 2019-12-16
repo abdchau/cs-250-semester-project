@@ -106,8 +106,11 @@ def addFile(dictDir, wordIDs, docID, barrels, forwardBarrels):
 
 	for barrel in barrels:
 		# open inverted barrel
-		with open(os.path.join(path, f"inverted_{barrel}.json"), 'r', encoding = "utf8") as invBarrel:
-			invertedIndex = json.load(invBarrel)
+		try:
+			with open(os.path.join(path, f"inverted_{barrel}.json"), 'r', encoding = "utf8") as invBarrel:
+				invertedIndex = json.load(invBarrel)
+		except:
+			invertedIndex = dict()
 
 		rem = []
 		for wordID in wordIDs:

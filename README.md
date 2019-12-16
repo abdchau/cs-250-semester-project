@@ -12,4 +12,4 @@ An implementation of "The Anatomy of a Large-Scale Hypertextual Web Search Engin
 - tqdm
 - unidecode
 
-Run main.py in src directory.
+Run run.py in src directory.

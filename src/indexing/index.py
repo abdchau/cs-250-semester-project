@@ -53,7 +53,7 @@ def indexDataset(lexicon):
 	
 	forwardBarrels = dict()
 	wordID = 0
-	for docID, file in tqdm(enumerate(os.listdir(DATA_PATH)[1:4])):
+	for docID, file in tqdm(enumerate(os.listdir(DATA_PATH)[1:2])):
 		tokens = clean(os.path.join(DATA_PATH, file))
 
 		wordID = L.processFile(lexicon, wordID, tokens)
@@ -68,6 +68,3 @@ def indexDataset(lexicon):
 		inverted.processFile(DICT_PATH, file, i)
 
 	print(datetime.now(), "Indexing complete")
-
-if __name__ == "__main__":
-	main()

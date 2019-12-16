@@ -31,7 +31,10 @@ def processFile(lexicon, wordID, tokens):
 
 
 def getNewWordID(lexicon):
-	return lexicon[list(lexicon.keys())[-1]] + 1
+	if lexicon:
+		return lexicon[list(lexicon.keys())[-1]] + 1
+	else:
+		return 0
 
 def load(dictDir):
 	"""

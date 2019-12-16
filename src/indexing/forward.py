@@ -33,7 +33,6 @@ def processFile(lexicon, forwardBarrels, barrelLength, tokens, docID):
 			docID : 
 				{
 					wordID : [
-						number of hits of this word,
 						location of first hit,
 						location of second hit,
 						...
@@ -100,8 +99,11 @@ def addFile(dictDir, lexicon, tokens, barrels, barrelLength):
 	path = os.path.join(dictDir, 'forward_barrels')
 	os.makedirs(path, exist_ok=True)
 	for barrel in barrels:
-		with open(os.path.join(path, f'forward_{barrel}.json'), 'r', encoding = "utf8") as forwardFile:
-			forwardBarrels[barrel] = json.load(forwardFile)
+		try:
+			with open(os.path.join(path, f'forward_{barrel}.json'), 'r', encoding = "utf8") as forwardFile:
+				forwardBarrels[barrel] = json.load(forwardFile)
+		except:
+			forwardBarrels[barrel] = dict()
 
 	processFile(lexicon, forwardBarrels, barrelLength, tokens, str(docID_[0]))
 	dump(dictDir, forwardBarrels)
