@@ -7,13 +7,18 @@ from tqdm import tqdm
 def processFile(lexicon, wordID, tokens):
 	"""
 	arguments:
-		- file: path to file from which lexicon is
-		to be generated
+		- lexicon: the lexicon to which words are to be
+		added
+		- wordID: the wordID to be assigned to the first
+		new word found
+		- tokens: the 'cleaned' text from the file being
+		processed
 
-	Everytime this function is called, words from another clean file will
-	be added to the lexicon.
+	Everytime this function is called, words from another
+	clean file will	be added to the lexicon.
 
-	return: void
+	return: the wordID that must be assigned to whatever
+	word is next added to this lexicon
 	"""
 
 	# if the word is not already present in lexicon, add it

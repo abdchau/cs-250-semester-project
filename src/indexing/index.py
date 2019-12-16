@@ -9,25 +9,46 @@ from config import DATA_PATH, DICT_PATH, BARREL_LENGTH
 
 
 def addFile(dictDir, file, lexicon, barrelLength):
+	"""
+	arguments:
+		- dictDir: the path of the directory containing the
+		dictionaries for the forward and the inverted index
+		- file: the path to the file that is to be added
+		- lexicon: the lexicon to be used for indexing
+		- barrelLength: the range of words in a single barrel
 
+	This function updates the lexicon to accommodate the
+	new file and adds the file to the forward and inverted
+	indexes.
+
+	return: None
+	"""
 	tokens = clean(file)
 	L.processFile(lexicon, L.getNewWordID(lexicon), tokens)
 
+	# get unique, sorted wordIDs present in the file
 	wordIDs = sorted(set([lexicon[token] for token in tokens]))
+
+	# get all barrels that are to be updated
 	barrels = set([wordID//barrelLength for wordID in wordIDs])
 
 	forwardBarrels, docID = forward.addFile(dictDir, lexicon, tokens, barrels, barrelLength)
-	inverted.addFile(dictDir, wordIDs, docID-1, barrels, forwardBarrels)
+	inverted.addFile(dictDir, wordIDs, docID, barrels, forwardBarrels)
 	L.dump(dictDir, lexicon)
 
 
 def indexDataset(lexicon):
-	# rawDir = "D:/data/717_webhose-2017-03_20170904123310"
-	# rawDir = r"..\..\data\raw"
-	# rawDir = r"..\..\..\Popular Blog Post Dataset\717_webhose-2017-03_20170904123310"
-	# cleanDir = r"..\..\data\cleaned"
-	# dictDir = r"..\..\dicts"
-	
+	"""
+	arguments:
+		- lexicon: the main lexicon that is to be held
+		in memory. It will generated from scratch
+
+	This function will iterate over the dataset provided
+	in DATASET_PATH and will index it. The indexes and
+	lexicon will be written to the DICT_PATH directory.
+
+	return: None
+	"""
 	print(datetime.now(), "Generating lexicon and forward index")
 	
 	forwardBarrels = dict()

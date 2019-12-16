@@ -26,7 +26,7 @@ def processFile(lexicon, forwardBarrels, barrelLength, tokens, docID):
 	"""
 	arguments:
 		- lexicon: the lexicon to be used for indexing
-		- forwardBarrels: the dictionary in which the forward 
+		- forwardBarrels: the dictionary in which the forward
 		indices are to be stored. Each forward index is of 
 		the form:
 		{
@@ -48,7 +48,7 @@ def processFile(lexicon, forwardBarrels, barrelLength, tokens, docID):
 
 	This function will add hits for every word present in
 	the file to the correct dictionary according to barrel
-	number, docID and wordID
+	number, docID and wordID.
 
 	returns: None
 	"""
@@ -77,6 +77,24 @@ def processFile(lexicon, forwardBarrels, barrelLength, tokens, docID):
 
 
 def addFile(dictDir, lexicon, tokens, barrels, barrelLength):
+	"""
+	arguments:
+		- dictDir: the path of the directory containing the
+		dictionaries for the forward and the inverted index
+		- lexicon: the lexicon to be used for indexing
+		- tokens: the cleaned words in the file
+		- barrels: the barrel numbers that are to be updated
+		- barrelLength: the range of words in one barrel
+
+	This function simply loads the barrels specified, forms
+	the forwardBarrels dictionary as required by the
+	processFile function and then passes everything on to
+	processFile(). After the barrels have been updated, it
+	dumps them to file.
+
+	return: the updated forward barrels and the docID assigned
+	to the new file
+	"""
 	forwardBarrels = dict()
 
 	path = os.path.join(dictDir, 'forward_barrels')
@@ -87,16 +105,16 @@ def addFile(dictDir, lexicon, tokens, barrels, barrelLength):
 
 	processFile(lexicon, forwardBarrels, barrelLength, tokens, str(docID_[0]))
 	dump(dictDir, forwardBarrels)
-	return forwardBarrels, docID_[0]
+	return forwardBarrels, docID_[0]-1
 
 
 def dump(dictDir, forwardBarrels):
 	"""
 	arguments:
 		- dictDir: the path of the directory containing the
-		dictionaries for the lexicon and the forward index.
+		dictionaries for the lexicon and the forward index
 		- forwardBarrels: the dictionary in which the forward
-		indices are stored. The form is described above.
+		indices are stored. The form is described above
 
 	This function will iterate through the forward barrels
 	and will write each to file.
