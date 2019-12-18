@@ -3,7 +3,7 @@ import os
 import string
 from tqdm import tqdm
 
-
+wordID_ = [0]
 def processFile(lexicon, wordID, tokens):
 	"""
 	arguments:
@@ -26,15 +26,12 @@ def processFile(lexicon, wordID, tokens):
 		if lexicon.get(token) == None:
 			lexicon[token] = wordID
 			wordID+=1
-
+	wordID_[0] = wordID
 	return wordID
 
 
-def getNewWordID(lexicon):
-	if lexicon:
-		return lexicon[list(lexicon.keys())[-1]] + 1
-	else:
-		return 0
+def getNewWordID():
+	return wordID_[0]
 
 def load(dictDir):
 	"""
@@ -50,12 +47,12 @@ def load(dictDir):
 	try:
 		with open(os.path.join(dictDir, 'lexicon.json'), 'r', encoding="utf8") as lexFile:
 			lexicon = json.load(lexFile)
-		wordID = getNewWordID(lexicon) # get the last wordID in the lexicon,
+		wordID = lexicon[list(lexicon.keys())[-1]] + 1		# get the last wordID in the lexicon,
 															# add 1 to get wordID for next addition
 	except FileNotFoundError:
 		lexicon = dict()
 		wordID = 0
-
+	wordID_[0] = wordID
 	return lexicon, wordID
 
 

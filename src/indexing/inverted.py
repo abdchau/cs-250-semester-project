@@ -27,7 +27,6 @@ def processFile(dictDir, forwardFile, barrel):
 		wordID : 
 			{
 				docID : [
-					number of hits in this document,
 					location of first hit,
 					location of second hit,
 					...
@@ -50,9 +49,7 @@ def processFile(dictDir, forwardFile, barrel):
 	for docID in tqdm(docIDs):
 
 		# if word occurs in some document, record 'inverted' hits
-		for wordID in list(forward[docID].keys()):
-			if forward[docID].get(str(wordID)) is None:
-				continue
+		for wordID in forward[docID].keys():
 
 			if invertedIndex.get(wordID) is None:
 				invertedIndex[wordID] = dict()

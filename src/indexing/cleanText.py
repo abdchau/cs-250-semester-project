@@ -10,7 +10,7 @@ stopWords = set(stopwords.words('english'))
 punc = str.maketrans('', '', string.punctuation)
 dgts = str.maketrans('', '', string.digits)
 
-def clean(file):
+def clean(text):
 	"""
 	arguments:
 		- file: the path to the file that is to be cleaned.
@@ -21,10 +21,6 @@ def clean(file):
 
 	return: list of 'cleaned' words from file
 	"""
-	with open(file, 'r', encoding="utf8") as f:
-		myDict = json.load(f)
-
-	text = myDict['text']
 
 	# remove punctuation from the text, "simplify" unicode characters
 	tokens = unidecode(text.lower()).replace('-', ' ').translate(punc).translate(dgts).split()
@@ -33,3 +29,9 @@ def clean(file):
 	tokens = [stemmer.stem(token) for token in tokens if not token in stopWords]
 
 	return tokens
+
+def readFile(file):
+	with open(file, 'r', encoding="utf8") as f:
+		myDict = json.load(f)
+
+	return myDict['author'], myDict['title'], myDict['text'], myDict['url']

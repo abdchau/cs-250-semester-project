@@ -68,11 +68,12 @@ def processFile(lexicon, forwardBarrels, barrelLength, tokens, docID):
 			# insert the hits
 			hits = getHits(tokens,tokens[i])
 			forwardBarrels[barrel][docID][lexicon[tokens[i]]] = hits
-			
+
 			# remove the repeated words in list
 			for index in hits:
 				tokens[index] = None
 	docID_[0] = int(docID) + 1
+	return docID
 
 
 def addFile(dictDir, lexicon, tokens, barrels, barrelLength):
@@ -110,7 +111,7 @@ def addFile(dictDir, lexicon, tokens, barrels, barrelLength):
 	return forwardBarrels, docID_[0]-1
 
 
-def dump(dictDir, forwardBarrels):
+def dump(dictDir, forwardBarrels, overwrite=True):
 	"""
 	arguments:
 		- dictDir: the path of the directory containing the
@@ -125,7 +126,16 @@ def dump(dictDir, forwardBarrels):
 	"""
 	path = os.path.join(dictDir, 'forward_barrels')
 	os.makedirs(path, exist_ok=True)
-	
 	for barrel, forwardIndex in forwardBarrels.items():
+		temp = dict()
+		if not overwrite:
+			try:
+				with open(os.path.join(path, f'forward_{barrel}.json'), 'r', encoding = "utf8") as forwardFile:
+					temp = json.load(forwardFile)
+					if temp is None:
+						temp = dict()
+			except FileNotFoundError:
+				pass
+		temp.update(forwardIndex)
 		with open(os.path.join(path, f'forward_{barrel}.json'), 'w', encoding = "utf8") as forwardFile:
-			json.dump(forwardIndex, forwardFile, indent=2)
+			json.dump(temp, forwardFile, indent=2)

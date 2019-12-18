@@ -3,8 +3,9 @@ import tkinter.filedialog
 from indexing import index
 from config import *
 from indexing.lexicon import load
+from indexing.lexicon import wordID_
 
-lexicon, wordID = load(DICT_PATH)
+lexicon, wordID_[0] = load(DICT_PATH)
 
 def addFile():
 	file = tkinter.filedialog.askopenfilename()
