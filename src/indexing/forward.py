@@ -110,7 +110,7 @@ def addFile(dictDir, lexicon, tokens, barrels, barrelLength):
 	return forwardBarrels, docID_[0]-1
 
 
-def dump(dictDir, forwardBarrels, overwrite=True):
+def dump(dictDir, forwardBarrels, overwrite=True, short=False):
 	"""
 	arguments:
 		- dictDir: the path of the directory containing the
@@ -123,7 +123,10 @@ def dump(dictDir, forwardBarrels, overwrite=True):
 
 	return: None
 	"""
-	path = os.path.join(dictDir, 'forward_barrels')
+	folder = 'forward_barrels'
+	if short:
+		folder = 'short_forward_barrels'
+	path = os.path.join(dictDir, folder)
 	os.makedirs(path, exist_ok=True)
 	for barrel, forwardIndex in forwardBarrels.items():
 		print(barrel)

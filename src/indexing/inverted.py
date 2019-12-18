@@ -4,7 +4,7 @@ import string
 from tqdm import tqdm
 
 
-def processFile(dictDir, forwardFile, barrel):
+def processFile(dictDir, forwardFile, barrel, short=False):
 	"""
 	arguments:
 		- dictDir: the path of the directory containing the
@@ -39,9 +39,12 @@ def processFile(dictDir, forwardFile, barrel):
 	return: None
 	"""
 	invertedIndex = dict()
-	
+	folder = 'forward_barrels'
+	if short:
+		folder = 'short_forward_barrels'
+
 	# get all docIDs from forward barrel
-	with open(os.path.join(dictDir+"\\forward_barrels", forwardFile), 'r', encoding="utf8") as fIndex:
+	with open(os.path.join(dictDir+"/"+folder, forwardFile), 'r', encoding="utf8") as fIndex:
 		forward = json.load(fIndex)
 	docIDs = list(forward.keys())
 
@@ -59,8 +62,12 @@ def processFile(dictDir, forwardFile, barrel):
 			invertedIndex[wordID][docID] = forward[docID][str(wordID)]
 
 	# dump inverted barrel to file
-	path = os.path.join(dictDir, 'inverted_barrels')
+	folder = 'inverted_barrels'
+	if short:
+		folder = 'short_inverted_barrels'
+	path = os.path.join(dictDir, folder)
 	os.makedirs(path, exist_ok=True)
+
 
 	with open(os.path.join(path, f"inverted_{barrel}.json"), 'w', encoding = "utf8") as invBarrel:
 		json.dump(invertedIndex, invBarrel, indent=2)
