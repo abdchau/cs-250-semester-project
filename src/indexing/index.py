@@ -5,20 +5,9 @@ from indexing import forward
 from indexing import inverted
 from indexing.cleanText import *
 from datetime import datetime
-from config import DATA_PATH, DICT_PATH, BARREL_LENGTH
+from config import *
 
 
-try:
-	with open(os.path.join(DICT_PATH, 'indexed_docs.json'), 'r', encoding="utf8") as f:
-		indexedDocs = json.load(f)
-except FileNotFoundError:
-	indexedDocs = dict()
-
-try:
-	with open(os.path.join(DICT_PATH, 'metadata.json'), 'r', encoding="utf8") as f:
-		metadata = json.load(f)
-except FileNotFoundError:
-	metadata = dict()
 
 
 def addFile(dictDir, file, lexicon, barrelLength):
@@ -39,8 +28,11 @@ def addFile(dictDir, file, lexicon, barrelLength):
 
 	# if document is already indexed, return
 	if indexedDocs.get(file[-20:]) is not None:
+		print("return")
 		return
-
+	print(indexedDocs)
+	print(file)
+	print("not return")
 	author, title, tokens, url = readFile(file)
 	tokens = clean(tokens)
 	L.processFile(lexicon, L.getNewWordID(), tokens)
@@ -58,7 +50,7 @@ def addFile(dictDir, file, lexicon, barrelLength):
 
 	# store document's metadata
 	addMetadata(docID, author, title, url)
-	print(metadata)
+	# print(metadata)
 
 def indexDataset(lexicon):
 	"""
@@ -76,24 +68,23 @@ def indexDataset(lexicon):
 
 	forwardBarrels = dict()
 	wordID = L.getNewWordID()
-	for file in tqdm(os.listdir(DATA_PATH)[1:2]):
-		path = os.path.join(DATA_PATH, file)
+	for file in tqdm(os.listdir(DATA_PATH)):
+		path = DATA_PATH+'/'+file
 
 		# make sure document is not already indexed
 		if indexedDocs.get(path[-20:]) is not None:
 			continue
 
 		author, title, tokens, url = readFile(path)
-		print(author)
 		tokens = clean(tokens)
 
 		wordID = L.processFile(lexicon, wordID, tokens)
-		docID = forward.processFile(lexicon, forwardBarrels, BARREL_LENGTH, tokens, forward.docID_[0])
-		indexedDocs[path[-20:]] = forward.docID_[0]
+		docID = forward.processFile(lexicon, forwardBarrels, BARREL_LENGTH, tokens, docID_[0])
+		indexedDocs[path[-20:]] = docID
 		
 		# store document's metadata
 		addMetadata(docID, author, title, url)
-
+	print(indexedDocs)	
 	# print(metadata)
 	print(datetime.now(), "Writing lexicon and forward index to file")
 	L.dump(DICT_PATH, lexicon)

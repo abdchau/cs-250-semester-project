@@ -3,6 +3,7 @@ import tkinter.filedialog
 from indexing import index
 from config import *
 from indexing.lexicon import load
+from searching import search as srch
 from indexing.lexicon import wordID_
 
 lexicon, wordID_[0] = load(DICT_PATH)
@@ -18,6 +19,6 @@ def indexDataset():
 	index.indexDataset(lexicon)
 
 def search(query):
-	# do something
 	print(query)
+	srch.searchword(DICT_PATH,BARREL_LENGTH,query)
 	pass

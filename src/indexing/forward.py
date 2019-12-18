@@ -1,8 +1,8 @@
 import json
 import os
 from tqdm import tqdm
+from config import docID_
 
-docID_ = [100000]
 
 def getHits(listOfElements, element):
     ''' Returns the indexes of all occurrences of give element in
@@ -51,27 +51,26 @@ def processFile(lexicon, forwardBarrels, barrelLength, tokens, docID):
 
 	returns: None
 	"""
-	for i in range(len(tokens)):
+	tokens = [lexicon[token] for token in tokens]
 
-		if tokens[i] is not None:
+	wordIDs = set(tokens)
 
-			# choose barrel
-			barrel = lexicon[tokens[i]]//barrelLength
+	for wordID in wordIDs:
 
+		# choose barrel
+		barrel = wordID//barrelLength
 
-			# prepare dictionary for hits insertion
-			if forwardBarrels.get(barrel) is None:
-				forwardBarrels[barrel] = dict()
-			if forwardBarrels[barrel].get(docID) is None:
-				forwardBarrels[barrel][docID] = dict()
+		# prepare dictionary for hits insertion
+		if forwardBarrels.get(barrel) is None:
+			forwardBarrels[barrel] = dict()
+		if forwardBarrels[barrel].get(docID) is None:
+			forwardBarrels[barrel][docID] = dict()
 
-			# insert the hits
-			hits = getHits(tokens,tokens[i])
-			forwardBarrels[barrel][docID][lexicon[tokens[i]]] = hits
+		# insert the hits
+		hits = getHits(tokens, wordID)
+		hits.insert(0,len(hits))
+		forwardBarrels[barrel][docID][wordID] = hits
 
-			# remove the repeated words in list
-			for index in hits:
-				tokens[index] = None
 	docID_[0] = int(docID) + 1
 	return docID
 
@@ -127,6 +126,7 @@ def dump(dictDir, forwardBarrels, overwrite=True):
 	path = os.path.join(dictDir, 'forward_barrels')
 	os.makedirs(path, exist_ok=True)
 	for barrel, forwardIndex in forwardBarrels.items():
+		print(barrel)
 		temp = dict()
 		if not overwrite:
 			try:
