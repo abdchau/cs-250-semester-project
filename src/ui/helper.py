@@ -27,5 +27,5 @@ def indexDataset():
 
 def search(query):
 	print(query)
-	srch.searchword(DICT_PATH,BARREL_LENGTH,query)
+	srch.searchquery(DICT_PATH,BARREL_LENGTH,query)
 	pass
