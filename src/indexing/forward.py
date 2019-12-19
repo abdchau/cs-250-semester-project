@@ -22,7 +22,7 @@ def getHits(listOfElements, element):
     return indexPosList
 
 
-def processFile(lexicon, forwardBarrels, barrelLength, tokens, docID):
+def processFile(lexicon, forwardBarrels, barrelLength, tokens, docID,short = False):
 	"""
 	arguments:
 		- lexicon: the lexicon to be used for indexing
@@ -70,12 +70,13 @@ def processFile(lexicon, forwardBarrels, barrelLength, tokens, docID):
 		hits = getHits(tokens, wordID)
 		hits.insert(0,len(hits))
 		forwardBarrels[barrel][docID][wordID] = hits
-
-	docID_[0] = int(docID) + 1
+		
+	if short == False:
+		docID_[0] = int(docID) + 1
 	return docID
 
 
-def addFile(dictDir, lexicon, tokens, barrels, barrelLength):
+def addFile(dictDir, lexicon, tokens, barrels, barrelLength,short=False):
 	"""
 	arguments:
 		- dictDir: the path of the directory containing the
@@ -95,8 +96,11 @@ def addFile(dictDir, lexicon, tokens, barrels, barrelLength):
 	to the new file
 	"""
 	forwardBarrels = dict()
+	folder = 'forward_barrels'
+	if short == true:
+		folder = 'short_forward_barrels'
 
-	path = os.path.join(dictDir, 'forward_barrels')
+	path = os.path.join(dictDir, folder)
 	os.makedirs(path, exist_ok=True)
 	for barrel in barrels:
 		try:
@@ -105,8 +109,8 @@ def addFile(dictDir, lexicon, tokens, barrels, barrelLength):
 		except:
 			forwardBarrels[barrel] = dict()
 
-	processFile(lexicon, forwardBarrels, barrelLength, tokens, str(docID_[0]))
-	dump(dictDir, forwardBarrels)
+	processFile(lexicon, forwardBarrels, barrelLength, tokens, str(docID_[0]),short)
+	dump(dictDir, forwardBarrels,short)
 	return forwardBarrels, docID_[0]-1
 
 

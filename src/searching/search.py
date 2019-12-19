@@ -1,6 +1,7 @@
 import json
 import os
 import string
+from config import *
 
 def searchword(dictDir,barrel_length,word):
 
@@ -10,15 +11,23 @@ def searchword(dictDir,barrel_length,word):
 			lexicon = json.load(lexFile)
 
 	wordID = lexicon[word]
-	print(wordID)
 
 	barrel = wordID//barrel_length
-	print(barrel)
+
 	path = os.path.join(dictDir, 'inverted_barrels')
 
 	with open(os.path.join(path, f"inverted_{barrel}.json"), 'r', encoding = "utf8") as invBarrel:
 		inverted = json.load(invBarrel)
 
 	docIDs = list(inverted[str(wordID)].keys())
+	hitsIndex = dict()
+	for docID in docIDs:
+		hitsIndex[docID] = inverted[str(wordID)][str(docID)]
 
-	print(docIDs)
+	sortedKeys = sorted(hitsIndex, key=lambda key:hitsIndex[key][0], reverse=True)
+	hitsIndex = {k:hitsIndex[k] for k in sortedKeys}
+	print(hitsIndex)
+	return hitsIndex
+	
+# def sortHits(numberofHits);
+	

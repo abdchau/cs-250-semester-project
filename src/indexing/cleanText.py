@@ -34,4 +34,4 @@ def readFile(file):
 	with open(file, 'r', encoding="utf8") as f:
 		myDict = json.load(f)
 
-	return myDict['author'], myDict['title'], myDict['text'], myDict['url']
+	return myDict['author'], myDict['title'], myDict['text'], myDict['url'], myDict['published'], len(myDict['text'])

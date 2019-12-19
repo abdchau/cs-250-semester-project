@@ -2,6 +2,11 @@ import tkinter
 import tkinter.filedialog
 import json
 from ui.helper import *
+from indexing import forward as frwd
+from indexing import inverted as inv
+
+
+	
 
 def main():
 	window = tkinter.Tk()
@@ -20,7 +25,7 @@ def main():
 	btn2.grid(column=2)
 	searchBtn.grid(column=3, row=0)
 	txt.grid(column=2, row=0)
-
+	window.protocol("WM_DELETE_WINDOW", onClose)
 	# window.filename = "hei"
 
 	window.geometry('340x222')
