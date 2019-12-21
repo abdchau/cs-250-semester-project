@@ -90,40 +90,39 @@ class Indexer:
 		print(datetime.now(), "Generating lexicon and forward index")
 		shortforwardBarrels = dict()
 		forwardBarrels = dict()
+		for folder in os.listdir(DATA_PATH): 
+			FILE_PATH = DATA_PATH+'/'+folder
+			for file in tqdm(os.listdir(FILE_PATH)):
+				path = FILE_PATH+'/'+file
 
-		for file in tqdm(os.listdir(DATA_PATH)):
-			path = DATA_PATH+'/'+file
+				# make sure document is not already indexed
+				if indexedDocs.get(path[-21:]) is not None:
+					continue
 
-			# make sure document is not already indexed
-			if indexedDocs.get(path[-21:]) is not None:
-				continue
+				author, title, tokens, url, published = readFile(path)
+				# converting published string into required datetime format
+				published = published[0:10]+" "+published[11:23]+"000"
 
-			author, title, tokens, url, published, lenText = readFile(path)
-			# converting published string into required datetime format
-			published = published[0:10]+" "+published[11:23]+"000"
+				# make tokens for short barreling
+				smalltokens = clean(author+" "+title)
 
-			# make tokens for short barreling
-			smalltokens = clean(author+" "+title)
+				# make tokens for long barreling
+				tokens = clean(tokens)
 
-			# make tokens for long barreling
-			tokens = clean(tokens)
+				# get wordID and docID for short barrels
+				self.lexicon.wordID = self.lexicon.processFile(self.lexicon,self.lexicon.wordID, smalltokens)
 
-			# get wordID and docID for short barrels
-			self.lexicon.wordID = self.lexicon.processFile(self.lexicon,
-				self.lexicon.wordID, smalltokens)
+				self.forwardIndexer.processFile(self.lexicon, shortforwardBarrels,self.barrelLength, smalltokens, self.docID,True)
 
-			self.forwardIndexer.processFile(self.lexicon, shortforwardBarrels,
-				self.barrelLength, smalltokens, self.docID,True)
-
-			# get wordID and dicID for large barrels
-			self.lexicon.wordID = self.lexicon.processFile(self.lexicon, self.lexicon.wordID, tokens)
-			self.forwardIndexer.processFile(self.lexicon, forwardBarrels, self.barrelLength, tokens, self.docID)
-			indexedDocs[path[-21:]] = self.docID
+				# get wordID and dicID for large barrels
+				self.lexicon.wordID = self.lexicon.processFile(self.lexicon, self.lexicon.wordID, tokens)
+				self.forwardIndexer.processFile(self.lexicon, forwardBarrels, self.barrelLength, tokens, self.docID)
+				indexedDocs[path[-21:]] = self.docID
 			
-			# store document's metadata
-			self.addMetadata(self.docID, author, title, url,published, lenText)
-			print(self.docID)
-			self.docID+=1
+				# store document's metadata
+				self.addMetadata(self.docID, author, title, url,published)
+				#print(self.docID)
+				self.docID+=1
 
 		print(datetime.now(), "Writing forward index to file")
 		
@@ -137,13 +136,14 @@ class Indexer:
 		self.forwardIndexer.dump(DICT_PATH, forwardBarrels, overwrite=False)
 
 		print(datetime.now(), "Generating inverted index")
-		for i, file in enumerate(os.listdir(os.path.join(DICT_PATH,'forward_barrels'))):
+		for file in os.listdir(os.path.join(DICT_PATH,'forward_barrels')):
+			i = int(file[8:-5])
 			self.invertedIndexer.processFile(DICT_PATH, file, i)
 
 		print(datetime.now(), "Indexing complete")
 
-	def addMetadata(self, docID, author, title, url,published,lenText):
-		self.metadata[docID] = [author, title, url, published, lenText]
+	def addMetadata(self, docID, author, title, url,published):
+		self.metadata[docID] = [author, title, url, published]
 
 	def	loadIndexedDocs(self):
 		try:
