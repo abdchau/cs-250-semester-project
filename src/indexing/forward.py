@@ -1,3 +1,4 @@
+import numpy as np
 import json
 import os
 from tqdm import tqdm
@@ -10,21 +11,24 @@ class ForwardIndexer:
 
 
 	def getHits(self, listOfElements, element):
-	    ''' Returns the indexes of all occurrences of give element in
-	    the list- listOfElements '''
-	    indexPosList = []
-	    indexPos = 0
-	    while True:
-	        try:
-	            # Search for item in list from indexPos to the end of list
-	            indexPos = listOfElements.index(element, indexPos)
-	            # Add the index position in list
-	            indexPosList.append(indexPos)
-	            indexPos += 1
-	        except ValueError as e:
-	            break
-	 
-	    return indexPosList
+		''' Returns the indexes of all occurrences of give element in
+		the list- listOfElements '''
+		indexPosList = []
+		indexPos = 0
+		while True:
+			try:
+				# Search for item in list from indexPos to the end of list
+				indexPos = listOfElements.index(element, indexPos)
+				# Add the index position in list
+				indexPosList.append(indexPos)
+				indexPos += 1
+			except ValueError as e:
+				break
+		
+		f = lambda position: 0.999**position
+		positionDecay = np.sum(f(np.array(indexPosList)))
+
+		return int(positionDecay*10000)
 
 
 	def processFile(self, lexicon, forwardBarrels, tokens, short=False):
@@ -47,11 +51,12 @@ class ForwardIndexer:
 				...
 			}
 			- tokens: the cleaned words in the file
-			- docID: the unique ID assigned to the file
+			- short: whether or not the file is being processed
+			for short barrels
 
 		This function will add hits for every word present in
 		the file to the correct dictionary according to barrel
-		number, docID and wordID.
+		number, docID, short and wordID.
 
 		returns: None
 		"""
@@ -72,7 +77,7 @@ class ForwardIndexer:
 
 			# insert the hits
 			hits = self.getHits(tokens, wordID)
-			hits.insert(0,len(hits))
+			# hits.insert(0,len(hits))
 			forwardBarrels[barrel][str(self.docID)][wordID] = hits
 
 		if not short:
@@ -149,3 +154,5 @@ class ForwardIndexer:
 			temp.update(forwardIndex)
 			with open(os.path.join(path, f'forward_{barrel}.json'), 'w', encoding = "utf8") as forwardFile:
 				json.dump(temp, forwardFile, indent=2)
+			temp.clear()
+		# forwardBarrels.clear()

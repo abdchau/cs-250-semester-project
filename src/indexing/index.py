@@ -72,6 +72,7 @@ class Indexer:
 		# store document's metadata
 		self.addMetadata(docID, author, title, url, published)
 		print(docID)
+		forwardBarrels.clear()
 
 
 	def indexDataset(self):
@@ -132,6 +133,7 @@ class Indexer:
 		# dump long barrels
 		print(datetime.now(), "Writing long forward index to file.")
 		self.forwardIndexer.dump(DICT_PATH, forwardBarrels, overwrite=False)
+		forwardBarrels.clear()
 
 		# invert short barrels
 		print(datetime.now(), "Generating short inverted index.")
