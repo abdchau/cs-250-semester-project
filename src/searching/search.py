@@ -6,7 +6,7 @@ from indexing.helper import *
 from collections import Counter
 from indexing.helper import *
 
-def searchWord(dictDir,barrel_length,word):
+def searchWord(dictDir,word):
 
 	docIDs = []
 	inverted = dict()
@@ -32,13 +32,13 @@ def searchWord(dictDir,barrel_length,word):
 	return hitsIndex
 
 
-def searchquery(dictDir,barrel_length,query):
+def searchquery(dictDir,query):
 	result_of_WordID = dict()
 	docIDs_of_all_words = []
 	words = clean(query)
 
 	for word in words:
-		result_of_WordID[word] = searchWord(dictDir,barrel_length,word)
+		result_of_WordID[word] = searchWord(dictDir,word)
 		docIDs_of_all_words = docIDs_of_all_words + list(result_of_WordID[word].keys())
 	
 	rnd = dict(Counter(docIDs_of_all_words))

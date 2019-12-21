@@ -55,4 +55,4 @@ class Window(tkinter.Tk):
 
 	def search(self,query):
 		print(query)
-		srch.searchquery(DICT_PATH,BARREL_LENGTH,query)		
+		srch.searchquery(DICT_PATH,query)		
