@@ -5,7 +5,7 @@ from searching import search as srch
 from indexing.index import Indexer
 from config import *
 from datetime import datetime
-
+from searching import search as srch
 
 class Window(tkinter.Tk):
 
@@ -20,7 +20,7 @@ class Window(tkinter.Tk):
 		indexButton = tkinter.Button(self, text="Index whole dataset",bg="green",
 			fg="white", command=self.indexer.indexDataset)
 		addButton = tkinter.Button(self, text="Add file to index", bg="green", fg="white", command=self.addFile)
-		searchBtn = tkinter.Button(self, text="Search", bg="green", fg="white", command=lambda :search(txt.get()))
+		searchBtn = tkinter.Button(self, text="Search", bg="green", fg="white", command=self.search(txt.get()))
 
 		label1.grid(column=0,row=0)
 		indexButton.grid(column=2)
@@ -40,6 +40,9 @@ class Window(tkinter.Tk):
 		
 		with open(os.path.join(DICT_PATH, 'metadata.json'), 'w', encoding="utf8") as f:
 			json.dump(self.indexer.metadata, f, indent=2)
+
+		with open(os.path.join(DICT_PATH, 'indexed_docs.json'), 'w', encoding="utf8") as docs:
+			json.dump(indexedDocs, docs, indent=2)		
 		self.destroy()
 
 
@@ -49,3 +52,7 @@ class Window(tkinter.Tk):
 
 		if file is not '':
 			self.indexer.addFile(DICT_PATH, file)
+
+	def search(self,query):
+		print(query)
+		srch.searchquery(DICT_PATH,BARREL_LENGTH,query)		

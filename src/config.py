@@ -4,7 +4,7 @@ import json
 
 DATA_PATH = "../data/raw"
 DICT_PATH = "../dicts"
-BARREL_LENGTH = 500
+INITIAL_BARREL_LENGTH = 100
 
 try:
 	with open(os.path.join(DICT_PATH, 'indexed_docs.json'), 'r', encoding="utf8") as f:

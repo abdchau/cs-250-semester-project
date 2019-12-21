@@ -10,6 +10,9 @@ indexer = Indexer()
 def onClose(window):
 	with open(os.path.join(DICT_PATH, 'metadata.json'), 'w', encoding="utf8") as f:
 		json.dump(metadata, f, indent=2)
+
+	with open(os.path.join(DICT_PATH, 'indexed_docs.json'), 'w', encoding="utf8") as docs:
+		json.dump(indexedDocs, docs, indent=2)	
 	window.destroy()
 
 def addFile():

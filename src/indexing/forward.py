@@ -1,6 +1,7 @@
 import json
 import os
 from tqdm import tqdm
+from indexing.helper import *
 
 
 class ForwardIndexer:
@@ -61,8 +62,8 @@ class ForwardIndexer:
 
 		for wordID in wordIDs:
 
-			# choose barrel
-			barrel = wordID//barrelLength
+			# choose barrel and make the next barrel with twica as many unique wordIDs
+			barrel = getBarrel(wordID)
 
 			# prepare dictionary for hits insertion
 			if forwardBarrels.get(barrel) is None:

@@ -14,7 +14,7 @@ class Indexer:
 		self.docID = 100000
 		self.lexicon = Lexicon(DICT_PATH)
 
-		self.barrelLength = BARREL_LENGTH
+		self.barrelLength = INITIAL_BARREL_LENGTH
 		self.indexedDocs = self.loadIndexedDocs()
 		self.metadata = self.loadMetadata()
 
@@ -40,7 +40,7 @@ class Indexer:
 		"""
 
 		# if document is already indexed, return
-		if indexedDocs.get(file[-20:]) is not None:
+		if indexedDocs.get(file[-21:]) is not None:
 			print("return")
 			return
 		print(indexedDocs)
@@ -66,7 +66,7 @@ class Indexer:
 		self.invertedIndexer.addFile(dictDir, wordIDs, self.docID, barrels, forwardBarrels)
 		self.lexicon.dump()
 
-		indexedDocs[file[-20:]] = self.docID
+		indexedDocs[file[-21:]] = self.docID
 
 		# store document's metadata
 		self.addMetadata(self.docID, author, title, url,published,lenText)
@@ -95,7 +95,7 @@ class Indexer:
 			path = DATA_PATH+'/'+file
 
 			# make sure document is not already indexed
-			if indexedDocs.get(path[-20:]) is not None:
+			if indexedDocs.get(path[-21:]) is not None:
 				continue
 
 			author, title, tokens, url, published, lenText = readFile(path)
@@ -113,12 +113,12 @@ class Indexer:
 				self.lexicon.wordID, smalltokens)
 
 			self.forwardIndexer.processFile(self.lexicon, shortforwardBarrels,
-				BARREL_LENGTH, smalltokens, self.docID,True)
+				self.barrelLength, smalltokens, self.docID,True)
 
 			# get wordID and dicID for large barrels
 			self.lexicon.wordID = self.lexicon.processFile(self.lexicon, self.lexicon.wordID, tokens)
-			self.forwardIndexer.processFile(self.lexicon, forwardBarrels, BARREL_LENGTH, tokens, self.docID)
-			indexedDocs[path[-20:]] = self.docID
+			self.forwardIndexer.processFile(self.lexicon, forwardBarrels, self.barrelLength, tokens, self.docID)
+			indexedDocs[path[-21:]] = self.docID
 			
 			# store document's metadata
 			self.addMetadata(self.docID, author, title, url,published, lenText)

@@ -57,7 +57,7 @@ class Lexicon:
 																# add 1 to get wordID for next addition
 		except FileNotFoundError:
 			self.lexDict = dict()
-			wordID = 0
+			wordID = 1
 		return self.lexDict, wordID
 
 

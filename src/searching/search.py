@@ -4,6 +4,7 @@ import string
 from config import *
 from indexing.helper import *
 from collections import Counter
+from indexing.helper import *
 
 def searchWord(dictDir,barrel_length,word):
 
@@ -13,7 +14,7 @@ def searchWord(dictDir,barrel_length,word):
 			lexicon = json.load(lexFile)
 
 	wordID = lexicon[word]
-	barrel = wordID//barrel_length
+	barrel = getBarrel(wordID)
 	path = os.path.join(dictDir, 'inverted_barrels')
 
 	with open(os.path.join(path, f"inverted_{barrel}.json"), 'r', encoding = "utf8") as invBarrel:
