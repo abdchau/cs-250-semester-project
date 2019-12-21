@@ -1,32 +1,51 @@
 import tkinter
 import tkinter.filedialog
 import json
-from ui.helper import *
-from indexing import forward as frwd
-from indexing import inverted as inv
+from searching import search as srch
+from indexing.index import Indexer
+from config import *
+from datetime import datetime
 
 
-	
+class Window(tkinter.Tk):
 
-def main():
-	window = tkinter.Tk()
-	window.title("Search Engine")
+	def __init__(self):
+		super(Window, self).__init__()
+		self.title("Search Engine")
+		self.indexer = Indexer()
 
-	label1 = tkinter.Label(window, text="Enter query:")
+		label1 = tkinter.Label(self, text="Enter query:")
+		txt = tkinter.Entry(self,width=15)
 
-	txt = tkinter.Entry(window,width=15)
-	btn1 = tkinter.Button(window, text="Index whole dataset", bg="green", fg="white", command=indexDataset)
-	btn2 = tkinter.Button(window, text="Add file to index", bg="green", fg="white", command=addFile)
-	searchBtn = tkinter.Button(window, text="Search", bg="green", fg="white", command=lambda :search(txt.get()))
+		indexButton = tkinter.Button(self, text="Index whole dataset",bg="green",
+			fg="white", command=self.indexer.indexDataset)
+		addButton = tkinter.Button(self, text="Add file to index", bg="green", fg="white", command=self.addFile)
+		searchBtn = tkinter.Button(self, text="Search", bg="green", fg="white", command=lambda :search(txt.get()))
 
-	label1.grid(column=0,row=0)
-	# label2.grid(column=0,row=2)
-	btn1.grid(column=2)
-	btn2.grid(column=2)
-	searchBtn.grid(column=3, row=0)
-	txt.grid(column=2, row=0)
-	window.protocol("WM_DELETE_WINDOW", onClose)
-	# window.filename = "hei"
+		label1.grid(column=0,row=0)
+		indexButton.grid(column=2)
+		addButton.grid(column=2)
+		searchBtn.grid(column=3, row=0)
+		txt.grid(column=2, row=0)
 
-	window.geometry('340x222')
-	window.mainloop()
+		self.protocol("WM_DELETE_WINDOW", self.onClose)
+		self.geometry('340x222')
+
+
+	def onClose(self):
+		print(datetime.now(), 'Exiting program. Dumping metadata and indexed documents.')
+		
+		# dump lexicon
+		self.indexer.lexicon.dump()
+		
+		with open(os.path.join(DICT_PATH, 'metadata.json'), 'w', encoding="utf8") as f:
+			json.dump(self.indexer.metadata, f, indent=2)
+		self.destroy()
+
+
+	def addFile(self):
+		file = tkinter.filedialog.askopenfilename()
+		print(file)
+
+		if file is not '':
+			self.indexer.addFile(DICT_PATH, file)

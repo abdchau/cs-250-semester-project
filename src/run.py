@@ -1,6 +1,7 @@
 import os
 from indexing import index
 from config import *
-import ui.window
+from ui.window import Window
 
-ui.window.main()
+window = Window()
+window.mainloop()

@@ -2,10 +2,10 @@ import json
 import os
 import string
 from config import *
-from indexing.cleanText import *
+from indexing.helper import *
 from collections import Counter
 
-def searchword(dictDir,barrel_length,word):
+def searchWord(dictDir,barrel_length,word):
 
 	docIDs = []
 	inverted = dict()
@@ -13,9 +13,7 @@ def searchword(dictDir,barrel_length,word):
 			lexicon = json.load(lexFile)
 
 	wordID = lexicon[word]
-
 	barrel = wordID//barrel_length
-
 	path = os.path.join(dictDir, 'inverted_barrels')
 
 	with open(os.path.join(path, f"inverted_{barrel}.json"), 'r', encoding = "utf8") as invBarrel:
@@ -28,16 +26,18 @@ def searchword(dictDir,barrel_length,word):
 
 	sortedKeys = sorted(hitsIndex, key=lambda key:hitsIndex[key], reverse=True)
 	hitsIndex = {k:hitsIndex[k] for k in sortedKeys}
-	print("doc ids for word "+word+" and hits :")
+	print("doc ids for word " + word + " and hits :")
 	print(hitsIndex)
 	return hitsIndex
-	
+
+
 def searchquery(dictDir,barrel_length,query):
 	result_of_WordID = dict()
 	docIDs_of_all_words = []
 	words = clean(query)
+
 	for word in words:
-		result_of_WordID[word] = searchword(dictDir,barrel_length,word)
+		result_of_WordID[word] = searchWord(dictDir,barrel_length,word)
 		docIDs_of_all_words = docIDs_of_all_words + list(result_of_WordID[word].keys())
 	
 	rnd = dict(Counter(docIDs_of_all_words))

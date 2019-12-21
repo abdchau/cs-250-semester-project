@@ -4,6 +4,7 @@ import string
 from unidecode import unidecode
 from nltk.stem.snowball import EnglishStemmer
 from nltk.corpus import stopwords
+from math import log2
 
 stemmer = EnglishStemmer()
 stopWords = set(stopwords.words('english'))
@@ -35,3 +36,6 @@ def readFile(file):
 		myDict = json.load(f)
 
 	return myDict['author'], myDict['title'], myDict['text'], myDict['url'], myDict['published'], len(myDict['text'])
+
+def getBarrel(wordID):
+	return int(log2(wordID/100))
