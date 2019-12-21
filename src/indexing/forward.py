@@ -5,8 +5,8 @@ from indexing.helper import *
 
 
 class ForwardIndexer:
-	# def __init__(self):
-	# 	self.docID = 
+	def __init__(self):
+		self.docID = 100000
 
 
 	def getHits(self, listOfElements, element):
@@ -27,7 +27,7 @@ class ForwardIndexer:
 	    return indexPosList
 
 
-	def processFile(self, lexicon, forwardBarrels, barrelLength, tokens, docID,short = False):
+	def processFile(self, lexicon, forwardBarrels, tokens, short=False):
 		"""
 		arguments:
 			- lexicon: the lexicon to be used for indexing
@@ -46,7 +46,6 @@ class ForwardIndexer:
 					},
 				...
 			}
-			- barrelLength: the range of words in one barrel
 			- tokens: the cleaned words in the file
 			- docID: the unique ID assigned to the file
 
@@ -62,22 +61,25 @@ class ForwardIndexer:
 
 		for wordID in wordIDs:
 
-			# choose barrel and make the next barrel with twica as many unique wordIDs
+			# choose barrel and make the next barrel with twice as many unique wordIDs
 			barrel = getBarrel(wordID)
 
 			# prepare dictionary for hits insertion
 			if forwardBarrels.get(barrel) is None:
 				forwardBarrels[barrel] = dict()
-			if forwardBarrels[barrel].get(docID) is None:
-				forwardBarrels[barrel][docID] = dict()
+			if forwardBarrels[barrel].get(str(self.docID)) is None:
+				forwardBarrels[barrel][str(self.docID)] = dict()
 
 			# insert the hits
 			hits = self.getHits(tokens, wordID)
 			hits.insert(0,len(hits))
-			forwardBarrels[barrel][docID][wordID] = hits
+			forwardBarrels[barrel][str(self.docID)][wordID] = hits
+
+		if not short:
+			self.docID+=1
 
 
-	def addFile(self, dictDir, lexicon, tokens, docID, barrels, barrelLength,short=False):
+	def addFile(self, dictDir, lexicon, tokens, barrels, short=False):
 		"""
 		arguments:
 			- dictDir: the path of the directory containing the
@@ -110,9 +112,9 @@ class ForwardIndexer:
 			except:
 				forwardBarrels[barrel] = dict()
 
-		self.processFile(lexicon, forwardBarrels, barrelLength, tokens, docID, short)
-		self.dump(dictDir, forwardBarrels,short)
-		return forwardBarrels
+		self.processFile(lexicon, forwardBarrels, tokens, short=short)
+		self.dump(dictDir, forwardBarrels, short=short)
+		return forwardBarrels, self.docID-1
 
 
 	def dump(self, dictDir, forwardBarrels, overwrite=True, short=False):

@@ -20,7 +20,7 @@ class Window(tkinter.Tk):
 		indexButton = tkinter.Button(self, text="Index whole dataset",bg="green",
 			fg="white", command=self.indexer.indexDataset)
 		addButton = tkinter.Button(self, text="Add file to index", bg="green", fg="white", command=self.addFile)
-		searchBtn = tkinter.Button(self, text="Search", bg="green", fg="white", command=self.search(txt.get()))
+		searchBtn = tkinter.Button(self, text="Search", bg="green", fg="white", command=lambda:self.search(txt.get()))
 
 		label1.grid(column=0,row=0)
 		indexButton.grid(column=2)
@@ -33,7 +33,7 @@ class Window(tkinter.Tk):
 
 
 	def onClose(self):
-		print(datetime.now(), 'Exiting program. Dumping metadata and indexed documents.')
+		print(datetime.now(), 'Exiting program. Dumping lexicon, metadata and indexed documents.')
 		
 		# dump lexicon
 		self.indexer.lexicon.dump()

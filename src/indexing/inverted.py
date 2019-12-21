@@ -4,7 +4,7 @@ import string
 from tqdm import tqdm
 
 
-class InvertedIndexer(object):
+class InvertedIndexer:
 	"""docstring for InvertedIndexer"""
 		
 
@@ -22,7 +22,7 @@ class InvertedIndexer(object):
 		iterate through every docID in the forward barrel, and
 		will generate a dictionary containing the hits of that 
 		wordID in each document.
-		
+
 		This dictionary will then be added to the inverted index
 		barrel, which will be written to file.
 
@@ -77,7 +77,7 @@ class InvertedIndexer(object):
 			json.dump(invertedIndex, invBarrel, indent=2)
 
 
-	def addFile(self, dictDir, wordIDs, docID, barrels, forwardBarrels):
+	def addFile(self, dictDir, wordIDs, docID, barrels, forwardBarrels, short=False):
 		"""
 		arguments:
 			- dictDir: the path of the directory containing the
@@ -109,7 +109,10 @@ class InvertedIndexer(object):
 
 		return: None
 		"""
-		path = os.path.join(dictDir, 'inverted_barrels')
+		folder = 'inverted_barrels'
+		if short:
+			folder = 'short_inverted_barrels'
+		path = os.path.join(dictDir, folder)
 		os.makedirs(path, exist_ok=True)
 
 		for barrel in barrels:
