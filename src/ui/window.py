@@ -23,7 +23,7 @@ class Window(tkinter.Tk):
 			fg="white", command=self.indexer.indexDataset)
 		addButton = tkinter.Button(self, text="Add file to index", bg="green", fg="white", command=self.addFile)
 		searchBtn = tkinter.Button(self, text="Search", bg="blue", fg="white",
-			command=lambda: self.search(txt.get(), self.indexer.lexicon.lexDict))
+			command=lambda: self.search(txt.get(), self.indexer.lexicon.lexDict,self.indexer.metadata))
 		clearBtn = tkinter.Button(self, text="Clear results", bg='red', fg='white', command=self.table.clear)
 
 		label1.place(x=10, y=45, in_=self)
@@ -61,10 +61,10 @@ class Window(tkinter.Tk):
 		if file is not '':
 			self.indexer.addFile(DICT_PATH, file)
 
-	def search(self,query,lexicon):
+	def search(self,query,lexicon,metadata):
 		print(datetime.now())
 		# print(query)
-		results = self.arrangeResults(srch.searchQuery(DICT_PATH,query,lexicon))
+		results = self.arrangeResults(srch.searchQuery(DICT_PATH,query,lexicon,metadata))
 		#print(results)
 		self.table.buildTree(results)
 		print(datetime.now())

@@ -8,7 +8,7 @@ from indexing.helper import *
 import itertools
 from datetime import datetime
 
-def searchQuery(dictDir,query,lexicon):
+def searchQuery(dictDir,query,lexicon,metadata):
 	finalLongDocs = dict()
 	shortDocIDs = []
 	longDocIDs = []
@@ -61,7 +61,7 @@ def searchQuery(dictDir,query,lexicon):
 	# sort the longResult again to get final order of dsiplaying result
 	longResult = sorted(longResult, key=lambda key:longResult[key],reverse = True)
 	
-	finalResultList = longResult # finalResultList + list(longResult.keys())
+	finalResultList = longResult 
 	
 	
 	if len(finalResultList) == 0:

@@ -107,8 +107,7 @@ class Indexer:
 
 				author, title, tokens, url, shares, filepath = readFile(path)
 				# converting published string into required datetime format
-				published = published[0:10]+" "+published[11:23]+"000"
-
+				
 				# make tokens for long and short barreling
 				shortTokens = clean(author+" "+title)
 				tokens = clean(tokens)
