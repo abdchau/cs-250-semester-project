@@ -2,7 +2,7 @@ import os
 import json
 
 
-DATA_PATH = "D:/data"
+DATA_PATH = "../data"
 DICT_PATH = "../dicts"
 INITIAL_BARREL_LENGTH = 100
 

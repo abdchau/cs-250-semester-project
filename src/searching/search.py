@@ -59,6 +59,7 @@ def searchquery(dictDir,query,lexicon):
 
 	finalResultList = finalResultList + list(topLongResults.keys())
 	
+	print(datetime.now())
 	print("order of results")
 
 	if len(finalResultList) == 0:

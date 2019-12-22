@@ -42,7 +42,7 @@ class Indexer:
 		print(file)
 		print(datetime.now(), "Adding document to index.")
 
-		author, title, tokens, url, published = readFile(file)
+		author, title, tokens, url, published, shares, filepath = readFile(path)
 
 		shortTokens = clean(author+" "+title)
 		tokens = clean(tokens)
@@ -70,7 +70,7 @@ class Indexer:
 		indexedDocs[file[-21:]] = docID
 
 		# store document's metadata
-		self.addMetadata(docID, author, title, url, published)
+		self.addMetadata(docID, author, title, url, published,shares,filepath)
 		print(docID)
 		forwardBarrels.clear()
 
@@ -102,7 +102,7 @@ class Indexer:
 				if indexedDocs.get(path[-21:]) is not None:
 					continue
 
-				author, title, tokens, url, published, shares = readFile(path)
+				author, title, tokens, url, published, shares, filepath = readFile(path)
 				# converting published string into required datetime format
 				published = published[0:10]+" "+published[11:23]+"000"
 
@@ -124,7 +124,7 @@ class Indexer:
 				indexedDocs[path[-21:]] = self.forwardIndexer.docID-1
 			
 				# store document's metadata
-				self.addMetadata(self.forwardIndexer.docID-1, author, title, url,published,shares)
+				self.addMetadata(self.forwardIndexer.docID-1, author, title, url,published,shares, filepath)
 
 		
 		# dump short barrels 
@@ -149,8 +149,8 @@ class Indexer:
 		print(datetime.now(), "Indexing complete.")
 
 
-	def addMetadata(self, docID, author, title, url,published,shares):
-		self.metadata[docID] = [author, title, url, published,shares]
+	def addMetadata(self, docID, author, title, url,published,shares,filepath):
+		self.metadata[docID] = [author, title, url, published,shares,filepath]
 
 
 	def	loadIndexedDocs(self):
