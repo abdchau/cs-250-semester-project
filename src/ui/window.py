@@ -16,7 +16,7 @@ class Window(tkinter.Tk):
 		self.indexer = Indexer()
 
 		label1 = tkinter.Label(self, text="Enter query:")
-		txt = tkinter.Entry(self,width=20)
+		txt = tkinter.Entry(self,width=30)
 		self.table = Table(self.indexer.metadata)
 
 		indexButton = tkinter.Button(self, text="Index whole dataset",bg="green",
@@ -27,7 +27,7 @@ class Window(tkinter.Tk):
 		clearBtn = tkinter.Button(self, text="Clear results", bg='red', fg='white', command=self.table.clear)
 
 		label1.place(x=10, y=45, in_=self)
-		searchBtn.place(x=210, y=43, in_=self)
+		searchBtn.place(x=270, y=43, in_=self)
 		txt.place(x=80, y=47, in_=self)
 
 		indexButton.place(x=10, y=10, in_=self)
@@ -75,6 +75,7 @@ class Window(tkinter.Tk):
 			for result in results:
 				lst.append((result,)+tuple(self.indexer.metadata[result][:3])+(results[result],))
 		except:
+			tkinter.messagebox.showerror("Error", "No results found")
 			print(datetime.now(), "No results found.")
 
 		return lst
