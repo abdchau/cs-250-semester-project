@@ -171,7 +171,6 @@ def getAllDocs(path,barrel,wordID,short = False):
 		return docIDs
 
 	# generate dictionary with docIDs and positionDecay and return for long barrel	
-	for docID in docIDs:
-		hitsIndex[docID] = inverted[str(wordID)][str(docID)]
+	hitsIndex = {docID:inverted[str(wordID)][str(docID)] for docID in docIDs}
 	
 	return hitsIndex
