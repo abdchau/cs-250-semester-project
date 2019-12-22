@@ -17,7 +17,7 @@ class Window(tkinter.Tk):
 
 		label1 = tkinter.Label(self, text="Enter query:")
 		txt = tkinter.Entry(self,width=20)
-		self.table = Table()
+		self.table = Table(self.indexer.metadata)
 
 		indexButton = tkinter.Button(self, text="Index whole dataset",bg="green",
 			fg="white", command=self.indexer.indexDataset)
@@ -66,7 +66,7 @@ class Window(tkinter.Tk):
 		# print(query)
 		results = self.arrangeResults(srch.searchQuery(DICT_PATH,query,lexicon))
 		print(results)
-		self.table.buildTree(results[:][:3])
+		self.table.buildTree(results)
 
 	def arrangeResults(self, results):
 		lst = []

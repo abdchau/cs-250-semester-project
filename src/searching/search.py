@@ -17,47 +17,56 @@ def searchQuery(dictDir,query,lexicon):
 	words = clean(query)
 	#print (words)
 
+	# finalLongDocs stores the sum of position decay for the word in all documents
+	# longDocIDs stores the documents the word was found in
+
 	for word in words:
 
 		tempShortDocs , tempLongDocs = searchWord(dictDir,word,lexicon)
 		
-		finalLongDocs = {key: finalLongDocs.get(key, 0) + tempLongDocs.get(key, 0)
-				for key in set(finalLongDocs) | set(tempLongDocs)}
+		# finalLongDocs = {key: finalLongDocs.get(key, 0) + tempLongDocs.get(key, 0)
+		# 		for key in set(finalLongDocs) | set(tempLongDocs)}
+		finalLongDocs = dict(Counter(finalLongDocs) + Counter(tempLongDocs))
 
 		shortDocIDs = shortDocIDs + tempShortDocs
 
-		longDocIDs = longDocIDs + list(tempLongDocs.keys())
+		longDocIDs = longDocIDs + list(tempLongDocs)
 
 
-	
+	# longResult counts the number of query words found in each document
 	longResult = dict(Counter(longDocIDs))
+	# shortResult counts the number of query words found in each document's author+title
 	shortResult = dict(Counter(shortDocIDs))
 
+	# sort shortResult by number of query words found in document. Remove
+	# the documents that had fewer than len(words)-1 query words
 	sortedKeys = sorted(shortResult, key=lambda key:shortResult[key],reverse = True)
-	shortResult = {k:shortResult[k] for k in sortedKeys}
+	shortResult = {k:shortResult[k]*100000 for k in sortedKeys[:15] if shortResult[k] > len(words)-2}
 
+	# sort longResult by number of query words found in document
 	sortedKeys = sorted(longResult, key=lambda key:longResult[key],reverse = True)
-	longResult = {k:longResult[k] for k in sortedKeys}
+	longResult = {k:longResult[k]*10000 + finalLongDocs[k] for k in sortedKeys[:15]}
 
-	topShortResults = dict(itertools.islice(shortResult.items(), 15))
-	topLongResults = dict(itertools.islice(longResult.items(), 15))
+	for key in set(shortResult).intersection(set(longResult)):
+		longResult[key] += shortResult[key]
 
-	for doc in list(topLongResults.keys()):
-		topLongResults[doc] = topLongResults[doc]*10000 + finalLongDocs[doc]
+	# topShortResults = dict(itertools.islice(shortResult.items(), 15))
+	# longResult = dict(itertools.islice(longResult.items(), 15))
 
-	sortedKeys = sorted(topLongResults, key=lambda key:topLongResults[key],reverse = True)
-	topLongResults = {k:topLongResults[k] for k in sortedKeys}	
 
-	print(topShortResults)
-	print(topLongResults)
+	longResult = sorted(longResult, key=lambda key:longResult[key],reverse = True)
+	# longResult = {k:longResult[k] for k in sortedKeys}	
 
-	for shortDoc in list(topShortResults.keys()):
-		if topShortResults[shortDoc] == len(words):
-			finalResultList.append(shortDoc)
-		else:
-			break
+	# print(topShortResults)
+	print(longResult)
 
-	finalResultList = finalResultList + list(topLongResults.keys())
+	# for shortDoc in list(topShortResults.keys()):
+	# 	if topShortResults[shortDoc] == len(words):
+	# 		finalResultList.append(shortDoc)
+	# 	else:
+	# 		break
+
+	finalResultList = longResult # finalResultList + list(longResult.keys())
 	
 	print(datetime.now())
 	print("order of results")

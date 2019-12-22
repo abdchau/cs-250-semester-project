@@ -1,4 +1,4 @@
-import tkinter as tk
+import tkinter
 import tkinter.font as tkFont
 import tkinter.ttk as ttk
 
@@ -6,8 +6,9 @@ import tkinter.ttk as ttk
 class Table(ttk.Frame):
 	"""use a ttk.TreeView as a multicolumn ListBox"""
 
-	def __init__(self):
+	def __init__(self, metadata):
 		super(Table, self).__init__(width=100,height=100)
+		self.metadata = metadata
 		self.tree = None
 		self.setup()
 		self.tree.bind("<Double-1>", self.OnDoubleClick)
@@ -41,6 +42,15 @@ class Table(ttk.Frame):
 
 	def OnDoubleClick(self, event):
 		item = self.tree.selection()[0]
-		print("you clicked on", self.tree.item(item, 'values'))
+		filePath = self.metadata[self.tree.item(item, 'values')[0]][-1]
+		with open(filePath, 'r', encoding='utf-8') as f:
+			data = f.read()
+		
+		disp = tkinter.Tk()
+		label1 = ttk.Label(disp,wraplength="6i", justify="left", anchor="n", text=data)
+		label1.grid()
+		disp.mainloop()
+
+
 
 headerList = [' docID ','                   Title                     ', '     author      ', '                  url                   ']

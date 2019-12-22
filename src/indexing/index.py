@@ -42,27 +42,30 @@ class Indexer:
 		print(file)
 		print(datetime.now(), "Adding document to index.")
 
-		author, title, tokens, url, published, shares, filepath = readFile(path)
+		author, title, tokens, url, published, shares, filepath = readFile(file)
 
 		shortTokens = clean(author+" "+title)
 		tokens = clean(tokens)
 
 		self.lexicon.wordID = self.lexicon.processFile(tokens)
+		self.lexicon.wordID = self.lexicon.processFile(shortTokens)
 
 		# get unique, sorted wordIDs present in the file
 		wordIDs = sorted(set([self.lexicon.lexDict[token] for token in tokens]))
+		shortWordIDs = sorted(set([self.lexicon.lexDict[token] for token in tokens]))
 
 		# get all barrels that are to be updated
 		barrels = sorted(set([getBarrel(wordID) for wordID in wordIDs]))
+		shortBarrels = sorted(set([getBarrel(wordID) for wordID in shortWordIDs]))
 
 		# add data to long and short forward barrels
 		shortForwardBarrels, _ = self.forwardIndexer.addFile(dictDir, 
-			self.lexicon, shortTokens, barrels, short=True)
+			self.lexicon, shortTokens, shortBarrels, short=True)
 		forwardBarrels, docID = self.forwardIndexer.addFile(dictDir, 
 			self.lexicon, tokens, barrels)
 
 		# add data to long and short inverted barrels
-		self.invertedIndexer.addFile(dictDir, wordIDs, docID, barrels, shortForwardBarrels, short=True)
+		self.invertedIndexer.addFile(dictDir, shortWordIDs, docID, shortBarrels, shortForwardBarrels, short=True)
 		self.invertedIndexer.addFile(dictDir, wordIDs, docID, barrels, forwardBarrels)
 
 		print(datetime.now(), "Document added to index.")
@@ -150,7 +153,7 @@ class Indexer:
 
 
 	def addMetadata(self, docID, author, title, url,published,shares,filepath):
-		self.metadata[str(docID)] = [author, title, url, published,shares,filepath]
+		self.metadata[str(docID)] = [title, author, url, published,shares,filepath]
 
 
 	def	loadIndexedDocs(self):
