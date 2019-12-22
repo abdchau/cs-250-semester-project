@@ -9,12 +9,6 @@ import itertools
 from datetime import datetime
 
 def searchQuery(dictDir,query,lexicon,metadata):
-	finalLongDocs = dict()
-	shortDocIDs = []
-	longDocIDs = []
-	finalResultList = []
-	words = clean(query)
-
 	'''
 		arguments:
 			dictDir: path of dictionaries stores
@@ -47,19 +41,23 @@ def searchQuery(dictDir,query,lexicon,metadata):
 
 	returns top 15 - 30 results
 	'''
-	
 	# finalLongDocs stores the sum of position decay for the word in all documents
 	# longDocIDs stores the documents the word was found in long barrels
 	# shortDocIDs stores the documents the word was found in short barrels
+	finalLongDocs = dict()
+	shortDocIDs = []
+	longDocIDs = []
+	words = clean(query)
+
+	if not words:
+		return
 
 	for word in words:
 
 		tempShortDocs , tempLongDocs = searchWord(dictDir,word,lexicon)
-		
 		finalLongDocs = dict(Counter(finalLongDocs) + Counter(tempLongDocs))
 
 		shortDocIDs = shortDocIDs + tempShortDocs
-
 		longDocIDs = longDocIDs + list(tempLongDocs)
 
 
@@ -92,16 +90,13 @@ def searchQuery(dictDir,query,lexicon,metadata):
 			longResult[key] = shortResult[key]
 
 	# sort the longResult again to get final order of dsiplaying result
-	longResult = sorted(longResult, key=lambda key:longResult[key],reverse = True)
+	sortedKeys = sorted(longResult, key=lambda key:longResult[key],reverse = True)
+	longResult = {key:longResult[key] for key in sortedKeys}	
 	
-	finalResultList = longResult 
+	if not longResult:
+		return
 	
-	
-	if len(finalResultList) == 0:
-		print("no result found")
-	else:
-		return finalResultList
-		#print(finalResultList)
+	return longResult
 		
 
 def searchWord(dictDir,word,lexicon):

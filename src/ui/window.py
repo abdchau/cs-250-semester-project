@@ -32,12 +32,13 @@ class Window(tkinter.Tk):
 
 		indexButton.place(x=10, y=10, in_=self)
 		addButton.place(x=150, y=10, in_=self)
-		clearBtn.place(x=400, y=70, in_=self)
+		clearBtn.place(x=523, y=70, in_=self)
 
 		self.table.place(x=7, y=100)
 
+		txt.bind("<Return>", lambda e: self.search(txt.get(), self.indexer.lexicon.lexDict,self.indexer.metadata))
 		self.protocol("WM_DELETE_WINDOW", self.onClose)
-		self.geometry('530x350')
+		self.geometry('630x350')
 
 
 	def onClose(self):
@@ -50,7 +51,7 @@ class Window(tkinter.Tk):
 			json.dump(self.indexer.metadata, f, indent=2)
 
 		with open(os.path.join(DICT_PATH, 'indexed_docs.json'), 'w', encoding="utf8") as docs:
-			json.dump(indexedDocs, docs, indent=2)		
+			json.dump(self.indexer.indexedDocs, docs, indent=2)		
 		self.destroy()
 
 
@@ -62,16 +63,18 @@ class Window(tkinter.Tk):
 			self.indexer.addFile(DICT_PATH, file)
 
 	def search(self,query,lexicon,metadata):
-		print(datetime.now())
-		# print(query)
+		print(datetime.now(), "Starting search.")
 		results = self.arrangeResults(srch.searchQuery(DICT_PATH,query,lexicon,metadata))
-		#print(results)
 		self.table.buildTree(results)
-		print(datetime.now())
+		print(datetime.now(), "Completed search.")
 
 
 	def arrangeResults(self, results):
 		lst = []
-		for result in results:
-			lst.append((result,)+tuple(self.indexer.metadata[result][:3]))
+		try:
+			for result in results:
+				lst.append((result,)+tuple(self.indexer.metadata[result][:3])+(results[result],))
+		except:
+			print(datetime.now(), "No results found.")
+
 		return lst

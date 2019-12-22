@@ -35,7 +35,7 @@ class Indexer:
 		"""
 
 		# if document is already indexed, return
-		if indexedDocs.get(file[-21:]) is not None:
+		if self.indexedDocs.get(file[-21:]) is not None:
 			print(datetime.now(), "Document already present in index.")
 			return
 
@@ -74,7 +74,7 @@ class Indexer:
 		print(datetime.now(), "Document added to index.")
 		
 		# add documentID into indexedDocs so it is not indexed again
-		indexedDocs[file[-21:]] = docID
+		self.indexedDocs[file[-21:]] = docID
 
 		# store document's metadata
 		self.addMetadata(docID, author, title, url,shares,filepath)
@@ -102,7 +102,7 @@ class Indexer:
 				path = FILE_PATH+'/'+file
 
 				# make sure document is not already indexed
-				if indexedDocs.get(path[-21:]) is not None:
+				if self.indexedDocs.get(path[-21:]) is not None:
 					continue
 
 				# get author name, title, all texts, url, weightedShares and file path of given file
@@ -124,7 +124,7 @@ class Indexer:
 				self.forwardIndexer.processFile(self.lexicon, forwardBarrels, tokens)
 
 				# record that document has been indexed
-				indexedDocs[path[-21:]] = self.forwardIndexer.docID-1
+				self.indexedDocs[path[-21:]] = self.forwardIndexer.docID-1
 			
 				# store document's metadata
 				self.addMetadata(self.forwardIndexer.docID-1, author, title, url,shares, filepath)

@@ -1,6 +1,7 @@
 import tkinter
 import tkinter.font as tkFont
 import tkinter.ttk as ttk
+from tkinter import scrolledtext
 
 
 class Table(ttk.Frame):
@@ -47,10 +48,14 @@ class Table(ttk.Frame):
 			data = f.read()
 		
 		disp = tkinter.Tk()
-		label1 = ttk.Label(disp,wraplength="6i", justify="left", anchor="n", text=data)
-		label1.grid()
+		text = scrolledtext.ScrolledText(disp, width=390)
+		text.insert(tkinter.INSERT, data)
+
+		text.pack()
+		disp.geometry('500x400')
 		disp.mainloop()
 
 
 
-headerList = [' docID ','                   Title                     ', '     author      ', '                  url                   ']
+headerList = [' docID ','                   Title                     ', '     author      ',
+'                  url                   ', 'PageRank Score']

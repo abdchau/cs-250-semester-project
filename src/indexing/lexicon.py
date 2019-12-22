@@ -45,8 +45,9 @@ class Lexicon:
 		try:
 			with open(os.path.join(dictDir, 'lexicon.json'), 'r', encoding="utf8") as lexFile:
 				self.lexDict = json.load(lexFile)
-			self.wordID = self.lexDict[list(self.lexDict.keys())[-1]] + 1	# get the last wordID in the lexicon,
-																			# add 1 to get wordID for next addition
+			if self.lexDict:
+				self.wordID = self.lexDict[list(self.lexDict.keys())[-1]] + 1	# get the last wordID in the lexicon,
+																				# add 1 to get wordID for next addition
 		except FileNotFoundError:
 			pass
 

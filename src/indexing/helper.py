@@ -58,6 +58,6 @@ def getShares(myDict):
 
 	# calculate weihgtedShares using average shares which is equal to 415	
 	weigtedShares = (shares/415)*500	
-	return weigtedShares
+	return int(weigtedShares)
 
 	
