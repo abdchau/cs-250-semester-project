@@ -5,7 +5,8 @@ from searching import search as srch
 from indexing.index import Indexer
 from config import *
 from datetime import datetime
-from searching import search as srch
+from ui.helper import Table
+
 
 class Window(tkinter.Tk):
 
@@ -15,21 +16,28 @@ class Window(tkinter.Tk):
 		self.indexer = Indexer()
 
 		label1 = tkinter.Label(self, text="Enter query:")
-		txt = tkinter.Entry(self,width=15)
+		txt = tkinter.Entry(self,width=20)
+		self.table = Table()
 
 		indexButton = tkinter.Button(self, text="Index whole dataset",bg="green",
 			fg="white", command=self.indexer.indexDataset)
 		addButton = tkinter.Button(self, text="Add file to index", bg="green", fg="white", command=self.addFile)
-		searchBtn = tkinter.Button(self, text="Search", bg="green", fg="white", command=lambda:self.search(txt.get(),self.indexer.lexicon.lexDict))
+		searchBtn = tkinter.Button(self, text="Search", bg="blue", fg="white",
+			command=lambda: self.search(txt.get(), self.indexer.lexicon.lexDict))
+		clearBtn = tkinter.Button(self, text="Clear results", bg='red', fg='white', command=self.table.clear)
 
-		label1.grid(column=0,row=0)
-		indexButton.grid(column=2)
-		addButton.grid(column=2)
-		searchBtn.grid(column=3, row=0)
-		txt.grid(column=2, row=0)
+		label1.place(x=10, y=45, in_=self)
+		searchBtn.place(x=210, y=43, in_=self)
+		txt.place(x=80, y=47, in_=self)
+
+		indexButton.place(x=10, y=10, in_=self)
+		addButton.place(x=150, y=10, in_=self)
+		clearBtn.place(x=400, y=70, in_=self)
+
+		self.table.place(x=7, y=100)
 
 		self.protocol("WM_DELETE_WINDOW", self.onClose)
-		self.geometry('340x222')
+		self.geometry('530x350')
 
 
 	def onClose(self):
@@ -56,4 +64,12 @@ class Window(tkinter.Tk):
 	def search(self,query,lexicon):
 		print(datetime.now())
 		# print(query)
-		srch.searchquery(DICT_PATH,query,lexicon)		
+		results = self.arrangeResults(srch.searchQuery(DICT_PATH,query,lexicon))
+		print(results)
+		self.table.buildTree(results[:][:3])
+
+	def arrangeResults(self, results):
+		lst = []
+		for result in results:
+			lst.append((result,)+tuple(self.indexer.metadata[result][:3]))
+		return lst

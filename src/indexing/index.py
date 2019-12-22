@@ -150,7 +150,7 @@ class Indexer:
 
 
 	def addMetadata(self, docID, author, title, url,published,shares,filepath):
-		self.metadata[docID] = [author, title, url, published,shares,filepath]
+		self.metadata[str(docID)] = [author, title, url, published,shares,filepath]
 
 
 	def	loadIndexedDocs(self):

@@ -8,7 +8,7 @@ from indexing.helper import *
 import itertools
 from datetime import datetime
 
-def searchquery(dictDir,query,lexicon):
+def searchQuery(dictDir,query,lexicon):
 	finalLongDocs = dict()
 	finalShortDocs = dict()
 	shortDocIDs = []
@@ -66,6 +66,7 @@ def searchquery(dictDir,query,lexicon):
 		print("no result found")
 	else:
 		print(finalResultList)
+		return finalResultList
 
 def searchWord(dictDir,word,lexicon):
 	shortHitsDocs = []
