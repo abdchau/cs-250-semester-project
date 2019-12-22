@@ -43,20 +43,22 @@ def searchquery(dictDir,query,lexicon):
 	topLongResults = dict(itertools.islice(longResult.items(), 15))
 
 	for doc in list(topLongResults.keys()):
-		topLongResults[doc] = topLongResults[doc]*1000000 + finalLongDocs[doc]
+		topLongResults[doc] = topLongResults[doc]*10000 + finalLongDocs[doc]
 
 	sortedKeys = sorted(topLongResults, key=lambda key:topLongResults[key],reverse = True)
 	topLongResults = {k:topLongResults[k] for k in sortedKeys}	
 
+	print(topShortResults)
+	print(topLongResults)
+
 	for shortDoc in list(topShortResults.keys()):
-		if topShortResults[shortDoc] > len(words)/2:
+		if topShortResults[shortDoc] == len(words):
 			finalResultList.append(shortDoc)
 		else:
 			break
 
-	finalResultList = finalResultList + list(set(topShortResults) - set(finalResultList))
-
-	print(datetime.now())
+	finalResultList = finalResultList + list(topLongResults.keys())
+	
 	print("order of results")
 
 	if len(finalResultList) == 0:
@@ -65,13 +67,13 @@ def searchquery(dictDir,query,lexicon):
 		print(finalResultList)
 
 def searchWord(dictDir,word,lexicon):
-	shortHitsIndex = dict()
+	shortHitsDocs = []
 	longHitsIndex = dict()	
 
 	try:
 		wordID = lexicon[word]
 	except KeyError:
-		return shortHitsIndex,longHitsIndex
+		return shortHitsDocs,longHitsIndex
 	
 	barrel = getBarrel(wordID)
 	path = os.path.join(dictDir, 'short_inverted_barrels')
@@ -105,9 +107,5 @@ def getAllDocs(path,barrel,wordID,short = False):
 
 	for docID in docIDs:
 		hitsIndex[docID] = inverted[str(wordID)][str(docID)]
-
-	#sortedKeys = sorted(hitsIndex, key=lambda key:hitsIndex[key], reverse=True)
-	#hitsIndex = {k:hitsIndex[k] for k in sortedKeys}
-	
 	
 	return hitsIndex
