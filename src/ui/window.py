@@ -65,8 +65,10 @@ class Window(tkinter.Tk):
 		print(datetime.now())
 		# print(query)
 		results = self.arrangeResults(srch.searchQuery(DICT_PATH,query,lexicon))
-		print(results)
+		#print(results)
 		self.table.buildTree(results)
+		print(datetime.now())
+
 
 	def arrangeResults(self, results):
 		lst = []

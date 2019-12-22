@@ -39,7 +39,7 @@ def readFile(file):
 
 	shares = getShares(myDict)
 		
-	return myDict['author'], myDict['title'], myDict['text'], myDict['url'], myDict['published'], shares, file
+	return myDict['author'], myDict['title'], myDict['text'], myDict['url'], shares, file
 
 def getBarrel(wordID):
 	return int(log2(ceil(wordID/INITIAL_BARREL_LENGTH)))
@@ -53,6 +53,7 @@ def getShares(myDict):
 	# sum the shares on all of the given websites
 	for site in socialsites:
 		shares = shares + myDict['thread']['social'][site]['shares']
+	shares = (shares/415)*500	
 	return shares
 
 	
