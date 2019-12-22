@@ -94,6 +94,7 @@ class Indexer:
 
 		for folder in os.listdir(DATA_PATH): 
 			FILE_PATH = DATA_PATH+'/'+folder
+
 			for file in tqdm(os.listdir(FILE_PATH)):
 				path = FILE_PATH+'/'+file
 
@@ -101,7 +102,7 @@ class Indexer:
 				if indexedDocs.get(path[-21:]) is not None:
 					continue
 
-				author, title, tokens, url, published = readFile(path)
+				author, title, tokens, url, published, shares = readFile(path)
 				# converting published string into required datetime format
 				published = published[0:10]+" "+published[11:23]+"000"
 
@@ -123,7 +124,7 @@ class Indexer:
 				indexedDocs[path[-21:]] = self.forwardIndexer.docID-1
 			
 				# store document's metadata
-				self.addMetadata(self.forwardIndexer.docID-1, author, title, url,published)
+				self.addMetadata(self.forwardIndexer.docID-1, author, title, url,published,shares)
 
 		
 		# dump short barrels 
@@ -148,8 +149,8 @@ class Indexer:
 		print(datetime.now(), "Indexing complete.")
 
 
-	def addMetadata(self, docID, author, title, url,published):
-		self.metadata[docID] = [author, title, url, published]
+	def addMetadata(self, docID, author, title, url,published,shares):
+		self.metadata[docID] = [author, title, url, published,shares]
 
 
 	def	loadIndexedDocs(self):

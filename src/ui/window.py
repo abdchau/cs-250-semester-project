@@ -20,7 +20,7 @@ class Window(tkinter.Tk):
 		indexButton = tkinter.Button(self, text="Index whole dataset",bg="green",
 			fg="white", command=self.indexer.indexDataset)
 		addButton = tkinter.Button(self, text="Add file to index", bg="green", fg="white", command=self.addFile)
-		searchBtn = tkinter.Button(self, text="Search", bg="green", fg="white", command=lambda:self.search(txt.get()))
+		searchBtn = tkinter.Button(self, text="Search", bg="green", fg="white", command=lambda:self.search(txt.get(),self.indexer.lexicon.lexDict))
 
 		label1.grid(column=0,row=0)
 		indexButton.grid(column=2)
@@ -53,6 +53,7 @@ class Window(tkinter.Tk):
 		if file is not '':
 			self.indexer.addFile(DICT_PATH, file)
 
-	def search(self,query):
-		print(query)
-		srch.searchquery(DICT_PATH,query)		
+	def search(self,query,lexicon):
+		print(datetime.now())
+		# print(query)
+		srch.searchquery(DICT_PATH,query,lexicon)		

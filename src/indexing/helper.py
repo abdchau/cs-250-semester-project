@@ -33,12 +33,27 @@ def clean(text):
 	return tokens
 
 def readFile(file):
+	shares = getShares(file)
+	
 	with open(file, 'r', encoding="utf8") as f:
 		myDict = json.load(f)
 
-	return myDict['author'], myDict['title'], myDict['text'], myDict['url'], myDict['published']
+	return myDict['author'], myDict['title'], myDict['text'], myDict['url'], myDict['published'], file
 
 def getBarrel(wordID):
 	return int(log2(ceil(wordID/INITIAL_BARREL_LENGTH)))
+
+def getShares(file):
+	shares = 0
+	with open(file, 'r', encoding="utf8") as f:
+		myDict = json.load(f)
+
+	# get list of all social media webesites
+	socialsites = list(myDict['thread']['social'].keys())
+
+	# sum the shares on all of the given websites
+	for site in socialsites:
+		shares = shares + myDict['thread']['social'][site]['shares']
+	return shares
 
 	

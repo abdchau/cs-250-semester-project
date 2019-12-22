@@ -28,7 +28,7 @@ class ForwardIndexer:
 		f = lambda position: 0.999**position
 		positionDecay = np.sum(f(np.array(indexPosList)))
 
-		return int(positionDecay*10000)
+		return int(positionDecay*1000)
 
 
 	def processFile(self, lexicon, forwardBarrels, tokens, short=False):
