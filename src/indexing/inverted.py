@@ -16,6 +16,8 @@ class InvertedIndexer:
 			- forwardFile: the path to the forward barrel that
 			is to be inverted
 			- barrel: the barrel number being inverted
+			- short: whether or not the file is being processed
+			for short barrels 
 
 		This function will iterate through every wordID in the
 		barrel's range. For every wordID, it will subsequently
@@ -43,6 +45,8 @@ class InvertedIndexer:
 		return: None
 		"""
 		invertedIndex = dict()
+
+		# change destination folder if processing is for short barrels
 		folder = 'forward_barrels'
 		if short:
 			folder = 'short_forward_barrels'
@@ -65,14 +69,14 @@ class InvertedIndexer:
 
 				invertedIndex[wordID][docID] = forward[docID][str(wordID)]
 
-		# dump inverted barrel to file
+		# change destination folder if processing is for short barrels
 		folder = 'inverted_barrels'
 		if short:
 			folder = 'short_inverted_barrels'
 		path = os.path.join(dictDir, folder)
 		os.makedirs(path, exist_ok=True)
 
-
+		# dump inverted barrel to file
 		with open(os.path.join(path, f"inverted_{barrel}.json"), 'w', encoding = "utf8") as invBarrel:
 			json.dump(invertedIndex, invBarrel, indent=2)
 
@@ -109,6 +113,7 @@ class InvertedIndexer:
 
 		return: None
 		"""
+		# change destination folder if processing is for short barrels
 		folder = 'inverted_barrels'
 		if short:
 			folder = 'short_inverted_barrels'
@@ -126,12 +131,12 @@ class InvertedIndexer:
 			rem = []
 			for wordID in wordIDs:
 				# if word occurs in some barrel, record 'inverted' hits
-				hits = forwardBarrels[barrel][str(docID)].get(wordID)
+				positionDecay = forwardBarrels[barrel][str(docID)].get(wordID)
 
-				if hits is not None:
+				if positionDecay is not None:
 					if invertedIndex.get(str(wordID)) is None:
 						invertedIndex[str(wordID)] = dict()
-					invertedIndex[str(wordID)][docID] = hits
+					invertedIndex[str(wordID)][docID] = positionDecay
 					rem.append(wordID)
 				else:
 					# remove indexed words from list

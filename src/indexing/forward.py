@@ -10,9 +10,11 @@ class ForwardIndexer:
 		self.docID = 100000
 
 
-	def getHits(self, listOfElements, element):
-		''' Returns the indexes of all occurrences of give element in
-		the list- listOfElements '''
+	def getPositonDecay(self, listOfElements, element):
+		''' Returns an integer as positionDecay which represents the significance of element
+			by first getting all occurrence of the element then mapping all the occurence 
+			in such a way that occurences closer to start will have a higher value than
+			the rest, then sum all the mapped numbers.'''
 		indexPosList = []
 		indexPos = 0
 		while True:
@@ -25,6 +27,7 @@ class ForwardIndexer:
 			except ValueError as e:
 				break
 		
+		# map all the position and add them up
 		f = lambda position: 0.999**position
 		positionDecay = np.sum(f(np.array(indexPosList)))
 
@@ -54,7 +57,7 @@ class ForwardIndexer:
 			- short: whether or not the file is being processed
 			for short barrels
 
-		This function will add hits for every word present in
+		This function will add positionDeccay for every word present in
 		the file to the correct dictionary according to barrel
 		number, docID, short and wordID.
 
@@ -69,17 +72,18 @@ class ForwardIndexer:
 			# choose barrel and make the next barrel with twice as many unique wordIDs
 			barrel = getBarrel(wordID)
 
-			# prepare dictionary for hits insertion
+			# prepare dictionary for positionDecay insertion
 			if forwardBarrels.get(barrel) is None:
 				forwardBarrels[barrel] = dict()
 			if forwardBarrels[barrel].get(str(self.docID)) is None:
 				forwardBarrels[barrel][str(self.docID)] = dict()
 
-			# insert the hits
-			hits = self.getHits(tokens, wordID)
-			# hits.insert(0,len(hits))
-			forwardBarrels[barrel][str(self.docID)][wordID] = hits
+			# insert the positionDecay
+			positionDecay = self.getPositonDecay(tokens, wordID)
+			
+			forwardBarrels[barrel][str(self.docID)][wordID] = positionDecay
 
+		# increase docID if the processing is not for short barrels
 		if not short:
 			self.docID+=1
 
@@ -92,7 +96,8 @@ class ForwardIndexer:
 			- lexicon: the lexicon to be used for indexing
 			- tokens: the cleaned words in the file
 			- barrels: the barrel numbers that are to be updated
-			- barrelLength: the range of words in one barrel
+			- short: whether or not the file is being processed
+			for short barrels 
 
 		This function simply loads the barrels specified, forms
 		the forwardBarrels dictionary as required by the
@@ -104,12 +109,17 @@ class ForwardIndexer:
 		to the new file
 		"""
 		forwardBarrels = dict()
+
+		# change destination folder if processing is for short barrels
 		folder = 'forward_barrels'
 		if short:
 			folder = 'short_forward_barrels'
 
+		# get path by joining dictDir and folder
 		path = os.path.join(dictDir, folder)
 		os.makedirs(path, exist_ok=True)
+
+		# load all forward barrels that are to be updated
 		for barrel in barrels:
 			try:
 				with open(os.path.join(path, f'forward_{barrel}.json'), 'r', encoding = "utf8") as forwardFile:
@@ -117,6 +127,7 @@ class ForwardIndexer:
 			except:
 				forwardBarrels[barrel] = dict()
 
+		# process and dump all the barrels loaded
 		self.processFile(lexicon, forwardBarrels, tokens, short=short)
 		self.dump(dictDir, forwardBarrels, short=short)
 		return forwardBarrels, self.docID-1
@@ -129,20 +140,32 @@ class ForwardIndexer:
 			dictionaries for the lexicon and the forward index
 			- forwardBarrels: the dictionary in which the forward
 			indices are stored. The form is described above
+			-overwrite: tells whether files are to be overwritten
+			- short: whether or not the file is being processed
+			for short barrels
 
 		This function will iterate through the forward barrels
 		and will write each to file.
 
 		return: None
 		"""
+
+		# change destination folder if processing is for short barrels
 		folder = 'forward_barrels'
 		if short:
 			folder = 'short_forward_barrels'
+
+		# get path by joining dictDir and folder	
 		path = os.path.join(dictDir, folder)
 		os.makedirs(path, exist_ok=True)
+
+		# split forwardBarrel to keys: (berrel number) and value:(forwardIndex)
+
 		for barrel, forwardIndex in forwardBarrels.items():
 			print(barrel)
 			temp = dict()
+
+			# do processing if overwrite is false
 			if not overwrite:
 				try:
 					with open(os.path.join(path, f'forward_{barrel}.json'), 'r', encoding = "utf8") as forwardFile:
@@ -151,6 +174,8 @@ class ForwardIndexer:
 							temp = dict()
 				except FileNotFoundError:
 					pass
+
+			# merge temp dictionary with forwardIndex then dump the temp dictionary into file		
 			temp.update(forwardIndex)
 			with open(os.path.join(path, f'forward_{barrel}.json'), 'w', encoding = "utf8") as forwardFile:
 				json.dump(temp, forwardFile, indent=2)

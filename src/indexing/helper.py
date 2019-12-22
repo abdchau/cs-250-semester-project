@@ -34,14 +34,16 @@ def clean(text):
 
 def readFile(file):
 	
+	'''reads the file nnd returns author name, title, blog, url, weightedShares and file path '''
 	with open(file, 'r', encoding="utf8") as f:
 		myDict = json.load(f)
 
-	shares = getShares(myDict)
+	weigtedShares = getShares(myDict)
 		
-	return myDict['author'], myDict['title'], myDict['text'], myDict['url'], shares, file
+	return myDict['author'], myDict['title'], myDict['text'], myDict['url'], weigtedShares, file
 
 def getBarrel(wordID):
+	# returns barrel number of respective wordID
 	return int(log2(ceil(wordID/INITIAL_BARREL_LENGTH)))
 
 def getShares(myDict):
@@ -53,7 +55,9 @@ def getShares(myDict):
 	# sum the shares on all of the given websites
 	for site in socialsites:
 		shares = shares + myDict['thread']['social'][site]['shares']
-	shares = (shares/415)*500	
-	return shares
+
+	# calculate weihgtedShares using average shares which is equal to 415	
+	weigtedShares = (shares/415)*500	
+	return weigtedShares
 
 	

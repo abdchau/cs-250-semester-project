@@ -14,6 +14,39 @@ def searchQuery(dictDir,query,lexicon,metadata):
 	longDocIDs = []
 	finalResultList = []
 	words = clean(query)
+
+	'''
+		arguments:
+			dictDir: path of dictionaries stores
+			query: search query written in search bar
+			lexicon: lexicon to be used to convert word into wordID
+			metadata: for adding weighted shares. It is stored in 
+			the form:
+			the form:
+			{
+				docID : 
+					{
+						title
+						author
+						URL
+						weightedShares
+						file path
+					},
+				...
+			}
+		this function first gets all the docIDs from short
+		barrels to check if query words are present in document's
+		author or title and then gets gets all the documentIDs
+		for each word, makes a dictionary with all documents
+		against the number of words from query it is in and
+		use this order along with weightedShares and 
+		positionDecay of eachWord in each document
+		to arrange document position in final result
+		then select the top 15 results
+
+
+	returns top 15 - 30 results
+	'''
 	
 	# finalLongDocs stores the sum of position decay for the word in all documents
 	# longDocIDs stores the documents the word was found in long barrels
@@ -72,6 +105,19 @@ def searchQuery(dictDir,query,lexicon,metadata):
 		
 
 def searchWord(dictDir,word,lexicon):
+
+	'''
+		arguments:
+			-dictDir: path of directory containing inverted barrels
+			-word: single word to search docIDs
+			- lexicon: to convert word word into respective WordID
+		
+		this function generates list of documentIDs 
+		from short barrels and dictionary of documentIDs 
+		against its weightedShares from long barrels
+
+	returns shortHitsDocs and longHitsIndex		
+	'''
 	shortHitsDocs = []
 	longHitsIndex = dict()	
 
@@ -95,9 +141,21 @@ def searchWord(dictDir,word,lexicon):
 
 def getAllDocs(path,barrel,wordID,short = False):
 
+	'''
+		arguments:
+			-path: path to open inverted barrels
+			-barrel: barrel number where wordID is stored
+			-wordID: wordID to retrive weightedShares
+				from inverted barrels
+			short: to indicate whether processing is for short 
+				or long barrels
 
-	# this function returns list of documentIDs for short barrels or a dictoinary with
-	# documentIDs and their respective positionDecay
+
+		this function returns list of documentIDs
+		for short barrels or a dictoinary with
+	 	documentIDs and their respective positionDecay			
+	'''
+
 	hitsIndex = dict()
 	with open(os.path.join(path, f"inverted_{barrel}.json"), 'r', encoding = "utf8") as invBarrel:
 		inverted = json.load(invBarrel)
