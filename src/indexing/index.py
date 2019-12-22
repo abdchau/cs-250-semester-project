@@ -16,7 +16,7 @@ class Indexer:
 		self.indexedDocs = self.loadIndexedDocs()
 		self.metadata = self.loadMetadata()
 
-		self.forwardIndexer = ForwardIndexer()
+		self.forwardIndexer = ForwardIndexer(self.indexedDocs)
 		self.invertedIndexer = InvertedIndexer()
 		
 

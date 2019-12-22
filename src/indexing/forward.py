@@ -6,9 +6,10 @@ from indexing.helper import *
 
 
 class ForwardIndexer:
-	def __init__(self):
+	def __init__(self, indexedDocs):
 		self.docID = 100000
-
+		if indexedDocs:
+			self.docID = int(list(indexedDocs.values())[-1])+1
 
 	def getPositonDecay(self, listOfElements, element):
 		''' Returns an integer as positionDecay which represents the significance of element
